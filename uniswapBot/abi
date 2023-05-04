@@ -1,0 +1,338 @@
+[
+  {
+    inputs: [ [Object] ],
+    stateMutability: 'nonpayable',
+    type: 'constructor'
+  },
+  {
+    anonymous: false,
+    inputs: [ [Object], [Object] ],
+    name: 'ProxyOwnerUpdate',
+    type: 'event'
+  },
+  {
+    anonymous: false,
+    inputs: [ [Object], [Object] ],
+    name: 'ProxyUpdated',
+    type: 'event'
+  },
+  { stateMutability: 'payable', type: 'fallback' },
+  {
+    inputs: [],
+    name: 'IMPLEMENTATION_SLOT',
+    outputs: [ [Object] ],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [],
+    name: 'OWNER_SLOT',
+    outputs: [ [Object] ],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [],
+    name: 'implementation',
+    outputs: [ [Object] ],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [],
+    name: 'proxyOwner',
+    outputs: [ [Object] ],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [],
+    name: 'proxyType',
+    outputs: [ [Object] ],
+    stateMutability: 'pure',
+    type: 'function'
+  },
+  {
+    inputs: [ [Object] ],
+    name: 'transferProxyOwnership',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function'
+  },
+  {
+    inputs: [ [Object], [Object] ],
+    name: 'updateAndCall',
+    outputs: [],
+    stateMutability: 'payable',
+    type: 'function'
+  },
+  {
+    inputs: [ [Object] ],
+    name: 'updateImplementation',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function'
+  },
+  { stateMutability: 'payable', type: 'receive' }
+]
+
+[
+  {
+    inputs: [ [Object] ],
+    stateMutability: 'nonpayable',
+    type: 'constructor'
+  },
+  {
+    anonymous: false,
+    inputs: [ [Object], [Object], [Object] ],
+    name: 'Approval',
+    type: 'event'
+  },
+  {
+    anonymous: false,
+    inputs: [ [Object], [Object], [Object] ],
+    name: 'MetaTransactionExecuted',
+    type: 'event'
+  },
+  {
+    anonymous: false,
+    inputs: [ [Object], [Object], [Object] ],
+    name: 'RoleAdminChanged',
+    type: 'event'
+  },
+  {
+    anonymous: false,
+    inputs: [ [Object], [Object], [Object] ],
+    name: 'RoleGranted',
+    type: 'event'
+  },
+  {
+    anonymous: false,
+    inputs: [ [Object], [Object], [Object] ],
+    name: 'RoleRevoked',
+    type: 'event'
+  },
+  {
+    anonymous: false,
+    inputs: [ [Object], [Object], [Object] ],
+    name: 'Transfer',
+    type: 'event'
+  },
+  {
+    inputs: [],
+    name: 'CHILD_CHAIN_ID',
+    outputs: [ [Object] ],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [],
+    name: 'CHILD_CHAIN_ID_BYTES',
+    outputs: [ [Object] ],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [],
+    name: 'DEFAULT_ADMIN_ROLE',
+    outputs: [ [Object] ],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [],
+    name: 'DEPOSITOR_ROLE',
+    outputs: [ [Object] ],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [],
+    name: 'ERC712_VERSION',
+    outputs: [ [Object] ],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [],
+    name: 'ROOT_CHAIN_ID',
+    outputs: [ [Object] ],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [],
+    name: 'ROOT_CHAIN_ID_BYTES',
+    outputs: [ [Object] ],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [ [Object], [Object] ],
+    name: 'allowance',
+    outputs: [ [Object] ],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [ [Object], [Object] ],
+    name: 'approve',
+    outputs: [ [Object] ],
+    stateMutability: 'nonpayable',
+    type: 'function'
+  },
+  {
+    inputs: [ [Object] ],
+    name: 'balanceOf',
+    outputs: [ [Object] ],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [],
+    name: 'decimals',
+    outputs: [ [Object] ],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [ [Object], [Object] ],
+    name: 'decreaseAllowance',
+    outputs: [ [Object] ],
+    stateMutability: 'nonpayable',
+    type: 'function'
+  },
+  {
+    inputs: [ [Object], [Object] ],
+    name: 'deposit',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function'
+  },
+  {
+    inputs: [ [Object], [Object], [Object], [Object], [Object] ],
+    name: 'executeMetaTransaction',
+    outputs: [ [Object] ],
+    stateMutability: 'payable',
+    type: 'function'
+  },
+  {
+    inputs: [],
+    name: 'getChainId',
+    outputs: [ [Object] ],
+    stateMutability: 'pure',
+    type: 'function'
+  },
+  {
+    inputs: [],
+    name: 'getDomainSeperator',
+    outputs: [ [Object] ],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [ [Object] ],
+    name: 'getNonce',
+    outputs: [ [Object] ],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [ [Object] ],
+    name: 'getRoleAdmin',
+    outputs: [ [Object] ],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [ [Object], [Object] ],
+    name: 'getRoleMember',
+    outputs: [ [Object] ],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [ [Object] ],
+    name: 'getRoleMemberCount',
+    outputs: [ [Object] ],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [ [Object], [Object] ],
+    name: 'grantRole',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function'
+  },
+  {
+    inputs: [ [Object], [Object] ],
+    name: 'hasRole',
+    outputs: [ [Object] ],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [ [Object], [Object] ],
+    name: 'increaseAllowance',
+    outputs: [ [Object] ],
+    stateMutability: 'nonpayable',
+    type: 'function'
+  },
+  {
+    inputs: [],
+    name: 'name',
+    outputs: [ [Object] ],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [ [Object], [Object] ],
+    name: 'renounceRole',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function'
+  },
+  {
+    inputs: [ [Object], [Object] ],
+    name: 'revokeRole',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function'
+  },
+  {
+    inputs: [],
+    name: 'symbol',
+    outputs: [ [Object] ],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [],
+    name: 'totalSupply',
+    outputs: [ [Object] ],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [ [Object], [Object] ],
+    name: 'transfer',
+    outputs: [ [Object] ],
+    stateMutability: 'nonpayable',
+    type: 'function'
+  },
+  {
+    inputs: [ [Object], [Object], [Object] ],
+    name: 'transferFrom',
+    outputs: [ [Object] ],
+    stateMutability: 'nonpayable',
+    type: 'function'
+  },
+  {
+    inputs: [ [Object] ],
+    name: 'withdraw',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function'
+  }
+]

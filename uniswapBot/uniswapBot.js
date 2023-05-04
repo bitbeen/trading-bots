@@ -1,5 +1,6 @@
 const { ethers } = require("ethers");
 const { abi: IUniswapV3PoolABI } = require("@uniswap/v3-core/artifacts/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json");
+const { abi: FactoryAbi } = require('@uniswap/v3-core/artifacts/contracts/UniswapV3Factory.sol/UniswapV3Factory.json')
 const { abi: QuoterABI } = require("@uniswap/v3-periphery/artifacts/contracts/lens/Quoter.sol/Quoter.json");
 
 const { getAbi, getPoolImmutables } = require('./helpers')
@@ -11,14 +12,21 @@ const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY
 const provider = new ethers.providers.JsonRpcProvider(INFURA_URL)
 
 //const poolAddress = '0x45dda9cb7c25131df268515131f647d726f50608' //usdc wrapped eth - usdc proxied
-//const poolAddress = '0x50eaedb835021e4a108b7290636d62e9765cc6d7' //WBTC - WETH 0.05%
+const poolAddress = '0x50eaedb835021e4a108b7290636d62e9765cc6d7' //WBTC - WETH 0.05%
 
-const poolAddress = '0x167384319b41f7094e62f7506409eb38079abff8' //matic wrapped eth 0.3%
+//const poolAddress = '0x167384319b41f7094e62f7506409eb38079abff8' //matic wrapped eth 0.3%
 
 const quoterAddress = "0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6"
+const factoryAddress ="0x1F98431c8aD98523631AE4a59f267346ea31F984"
 
 
-const getPrice = async (inputAmount) => {
+
+const _tokenAddress0 = "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270"
+const _tokenAddress1 = "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619"
+
+
+
+const getPrice = async (inputAmount,poolAddress) => {
     //init pool contracrt
     const poolContract = new ethers.Contract(
       poolAddress,
@@ -35,6 +43,12 @@ const getPrice = async (inputAmount) => {
   //to init contract we need Abis
   const tokenAbi0 = await getAbi(tokenAddress0)
   const tokenAbi1 = await getAbi(tokenAddress1)
+  //console.log(tokenAbi0)
+  //console.log(tokenAbi1)
+  
+  //check if Abi contains proxy
+  //if yes then get relevant data for debug.
+  //filter on list of objects (faster than for loop)
 
   //init contracts for both tokens 
 
@@ -49,8 +63,11 @@ const getPrice = async (inputAmount) => {
     provider
   )
 
+  
   const tokenSymbol0 = await tokenContract0.symbol()
+  //const tokenSymbolX = await tokenContract0.functions()
   const tokenSymbol1 = await tokenContract1.symbol()
+  //console.log(tokenSymbolX)
   console.log(tokenSymbol0)
   console.log(tokenSymbol1)
     //some contracts are proxy contracts we would need the original to get the actual symbol from the proxy
@@ -63,6 +80,7 @@ const getPrice = async (inputAmount) => {
   const tokenDecimals1 = await tokenContract1.decimals()
   console.log(tokenDecimals0)
   console.log(tokenDecimals1)
+  
 
   const quoterContract = new ethers.Contract(
     quoterAddress,
@@ -126,7 +144,7 @@ const tokenContract1 = new ethers.Contract(
   tokenAbi1,
   provider
 )
-
+try {
 const tokenSymbol0 = await tokenContract0.symbol()
 const tokenSymbol1 = await tokenContract1.symbol()
 console.log(tokenSymbol0)
@@ -141,6 +159,9 @@ const tokenDecimals0 = await tokenContract0.decimals()
 const tokenDecimals1 = await tokenContract1.decimals()
 console.log(tokenDecimals0)
 console.log(tokenDecimals1)
+}catch(error){
+  print("caught error")
+}
 
 const quoterContract = new ethers.Contract(
   quoterAddress,
@@ -156,6 +177,8 @@ const amountIn = ethers.utils.parseUnits(
   tokenDecimals0
 )
 
+
+//if you can't get the symbol [WBTC,USDC] - might be problem here too ??
 //quote data coming out
 const quotedAmountOut = await quoterContract.callStatic.quoteExactInputSingle(
   immutables.token1,
@@ -174,5 +197,45 @@ console.log('=========')
 
 }  
 
-getPrice(1) //how may eth 1 Wrapped BTC is worth 
-getPriceInverse(1)
+
+
+const getPoolFromTokens = async () =>{
+  const factoryContract = new ethers.Contract(
+    factoryAddress,
+    FactoryAbi,
+    provider
+  )
+
+  const _poolAddress = await factoryContract.getPool(_tokenAddress0,_tokenAddress1, 500) 
+  console.log(_poolAddress)
+  //getPrice(1,_poolAddress)
+  
+  /*
+  
+    .then(poolAddress => console.log(poolAddress))
+    */
+
+}
+
+const getTokensFromPool = async() => {
+  const poolContract = new ethers.Contract(
+    poolAddress,
+    IUniswapV3PoolABI,
+    provider
+  )
+
+  //pull token addresses
+  const tokenAddress0 = await poolContract.token0();
+  const tokenAddress1 = await poolContract.token1();
+  console.log(tokenAddress0)
+  console.log(tokenAddress1)
+
+
+}
+//getPrice(1) //how may eth 1 Wrapped BTC is worth 
+//getPriceInverse(1)
+
+//getTokensFromPool()
+
+getPoolFromTokens()
+//console.log(FactoryAbi)
