@@ -1,3 +1,5 @@
+//gets spot price of each token 
+
 const { ethers } = require("ethers");
 const { abi: IUniswapV3PoolABI } = require("@uniswap/v3-core/artifacts/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json");
 const { abi: FactoryAbi } = require('@uniswap/v3-core/artifacts/contracts/UniswapV3Factory.sol/UniswapV3Factory.json')
@@ -20,16 +22,27 @@ const provider = new ethers.providers.JsonRpcProvider(INFURA_URL)
 
 //const poolAddress = '0x98b9162161164de1ed182a0dfa08f5fbf0f733ca' //matic wrapped link 0.3%
 
-const poolAddress = '0xa708d430656aa379b6b0b1d570be8ae1095530e5' //matic wrapped link 0.3%
+//const poolAddress = '0x357faf5843c7fd7fb4e34fbeabdac16eabe8a5bc' //ETH / UNI 0.3%
+//const poolAddress = '0xE3E03601DED8C4AE350351C54ce2cB07450e715d' //MATIC USDC
+
+const poolAddress = '0x7f9121b4f4e040fd066e9dc5c250cf9b4338d5bc' //matic uni
+//const poolAddress = '0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45' //matic Eth testnet
+
+//const poolAddress = '0x0000000000000000000000000000000000000000' //matic Eth testnet
+
 
 const quoterAddress = "0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6"
 const factoryAddress ="0x1F98431c8aD98523631AE4a59f267346ea31F984"
 
 
-
+/*
 const _tokenAddress0 = "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270"
 const _tokenAddress1 = "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619"
 
+*/
+
+const _tokenAddress0 = "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270"
+const _tokenAddress1 = "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619"
 
 
 const getPrice = async (inputAmount) => {
@@ -312,11 +325,10 @@ const handleProxyTokenContract = async (tokenAddress, tokenAbi) =>{
 
 }
 
-getExchanges();
-getPrice(1) //how may eth 1 Wrapped BTC is worth 
+//getExchanges();
+//getPrice(1) //how may eth 1 Wrapped BTC is worth 
 //getPriceInverse(1)
 
-//getTokensFromPool()
-
+getTokensFromPool()
 //getPoolFromTokens()
 //console.log(FactoryAbi)

@@ -11,7 +11,7 @@ const UNI_FACTORY = '0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32'
 const USDC = '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270'
 const WETH = "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619"
 
-
+//get pOOL  from sushi swap based on uniswap
 
 const getPairs = async() => {
     //const sushiAbi = await getAbi(SUSHI_FACTORY)
