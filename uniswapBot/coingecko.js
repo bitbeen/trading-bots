@@ -7,7 +7,7 @@ exports.getExchanges= async () => {
     const url = `https://api.coingecko.com/api/v3/exchanges/list`
     
     const res = await axios.get(url)
-    console.log(res.data[500])
+    console.log(res.data)
     //const exchanges = JSON.parse(res.data)
    // return exchanges
 

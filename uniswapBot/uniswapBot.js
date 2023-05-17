@@ -1,5 +1,5 @@
 //gets spot price of each token 
-
+const JSBI = require('jsbi');
 const { ethers } = require("ethers");
 const { abi: IUniswapV3PoolABI } = require("@uniswap/v3-core/artifacts/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json");
 const { abi: FactoryAbi } = require('@uniswap/v3-core/artifacts/contracts/UniswapV3Factory.sol/UniswapV3Factory.json')
@@ -325,10 +325,47 @@ const handleProxyTokenContract = async (tokenAddress, tokenAbi) =>{
 
 }
 
+const getPriceFromPoolUni = async() => {
+  const poolContract = new ethers.Contract(
+    poolAddress,
+    IUniswapV3PoolABI,
+    provider
+  )
+
+  //pull token addresses
+  const slot0 = await poolContract.slot0();
+  //const tokenAddress1 = await poolContract.token1();
+  
+  var sqrtPriceX96 = slot0[0];
+  var answer = uint(sqrtPriceX96).mul(uint(sqrtPriceX96)).mul(1e18) >> (96 * 2);
+  //var number_1 =JSBI.BigInt(sqrtPriceX96 *sqrtPriceX96* (1e18)/(1e18)/JSBI.BigInt(2) ** (JSBI.BigInt(192)));
+
+  console.log(answer)
+}
+
 //getExchanges();
 //getPrice(1) //how may eth 1 Wrapped BTC is worth 
 //getPriceInverse(1)
 
-getTokensFromPool()
+//getTokensFromPool()
 //getPoolFromTokens()
 //console.log(FactoryAbi)
+getPriceFromPoolUni()
+//https://www.youtube.com/watch?v=_ybg6SC6srE
+
+
+/**
+ * 
+ * 
+ * 
+ * 
+ * sqrtPriceX96 = sqrt(price) * 2 ** 96
+    # divide both sides by 2 ** 96
+    sqrtPriceX96 / (2 ** 96) = sqrt(price)
+    # square both sides
+    (sqrtPriceX96 / (2 ** 96)) ** 2 = price
+    # expand the squared fraction
+    (sqrtPriceX96 ** 2) / ((2 ** 96) ** 2)  = price
+    # multiply the exponents in the denominator to get the final expression
+    sqrtRatioX96 ** 2 / 2 ** 192 = price
+ */
