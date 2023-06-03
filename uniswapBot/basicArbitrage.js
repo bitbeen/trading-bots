@@ -55,12 +55,18 @@ const main = async () => {
 
     //get the respective uniswap and sushi swap pools for each token path
     const uniPool = await getPoolFromTokens(uniFactoryAddress,factoryAbiU, PATH,500) //500 for sushi uni
+    const uniPool1 = await getPoolFromTokens(uniFactoryAddress,factoryAbiU, PATH,3000) //500 for sushi uni
+    //const uniPool2 = await getPoolFromTokens(uniFactoryAddress,factoryAbiU, PATH,500) //500 for sushi uni
+
+
     const sushiPool = await getPoolFromTokens(sushiFactoryAddress,factoryAbiS,PATH,500) //500
 
     const poolAbiU = await getAbi(uniPool) // 0xe592427a0aece92de3edee1f18e0157c05861564
+    const poolAbiU1 = await getAbi(uniPool1) // 0xe592427a0aece92de3edee1f18e0157c05861564
     const poolAbiS = await getAbi(sushiPool)
 
     const uniImmutables =  await getPoolData(uniPool,poolAbiU)
+    const uniImmutables1 =  await getPoolData(uniPool1,poolAbiU1)
     const sushiImmutables =  await getPoolData(sushiPool,poolAbiS)
     //const sushiImmutables = await getPoolData(sushiPool,poolAbiS)
 
@@ -77,6 +83,7 @@ const main = async () => {
     //use unitick to get V3 uni price
 
     const uniPrice = await _getAmountsOut(amountIn, PATH, uniImmutables)
+    const uniPrice1 = await _getAmountsOut(amountIn, PATH, uniImmutables1)
     const sushiPrice = await _getAmountsOut(amountIn, PATH, sushiImmutables)
     //const sushiAmount = await sushiRouter.getAmountsOut(amountIn, PATH)
     //const sushiPrice = Number(sushiAmount[1]/sushiAmount[0])
@@ -101,7 +108,7 @@ const main = async () => {
     //const uniAmount = await uniRouter.getAmountsOut(amountIn,PATH) 
     //const sushiAmount = await sushiRouter.getAmountsOut(amountIn,PATH)
    
-
+    
     if (uniPrice > sushiPrice){
         effUniPrice = uniPrice - (uniPrice * TX_FEE)
         effSushiPrice = sushiPrice +(sushiPrice * TX_FEE)
@@ -149,7 +156,8 @@ const main = async () => {
         //calculate gas fee of making transaction 
 
 
-     //console.log('uniPrice', uniPrice)
+     console.log('uniPrice', uniPrice)
+     console.log('uniPrice', uniPrice1)
      //console.log('sushiPrice', sushiPrice)
 
 
