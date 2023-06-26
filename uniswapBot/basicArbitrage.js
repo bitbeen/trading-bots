@@ -92,12 +92,13 @@ const main = async () => {
     //console.log(sushiAmount)
 
     TX_FEE = uniImmutables.fee/(10**6) //the pool fee should comefrom immutables not manual
+    //pool transaction fee is different
 
 
     let effUniPrice;
     let effSushiPrice;
     let spread;
-    console.log(TX_FEE)
+    console.log(TX_FEE + "TX")
 
     //once subgraphs installed no need for this and manually grabbing fee
 

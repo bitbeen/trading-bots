@@ -180,3 +180,148 @@ exports.handleProxyTokenContract = async (tokenAddress, tokenAbi) =>{
   
   
   }
+
+exports.subgraphGetUniPools = async () => {
+  const URL = 'https://api.thegraph.com/subgraphs/name/messari/uniswap-v3-polygon'
+  let pools ={}
+  //const URLS = 'https://api.thegraph.com/subgraphs/name/sushi-v3/v3-polygon'
+  
+  /*
+  query = `
+      {
+      pools(orderBy: volumeUSD, orderDirection:desc, first:10){
+          id
+          volumeUSD, 
+          liquidity
+          totalValueLockedUSD
+          token0{
+              symbol
+          }
+          token1{
+              symbol
+          }
+          
+      }
+     
+  }
+  `*/
+  
+  query = `
+  {
+    liquidityPools {
+      id
+      tick
+      cumulativeWithdrawCount
+      name
+      fees {
+        feePercentage
+      }
+      inputTokens {
+        id
+        name
+        symbol
+        lastPriceUSD
+        lastPriceBlockNumber
+        decimals
+        _lastPricedPool {
+          tick
+        }
+      }
+      activeLiquidity
+      activeLiquidityUSD
+      
+    }
+  }
+  `
+  
+  await axios.post(URL, {query: query})
+      .then((result) =>{
+          //console.log(result.data.data)
+          pools = result.data.data
+         
+          
+      })
+      return pools
+      
+  
+}
+
+exports.subgraphGetSuhPools = async () => {
+  let pools ={}
+  
+  const URL = 'https://api.thegraph.com/subgraphs/name/sushi-v3/v3-polygon'
+  
+  /*
+  
+  query = `
+  {
+    pools {
+      id
+      token0 {
+        id
+        symbol
+      }
+      token1 {
+        id
+        symbol
+      }
+      volumeToken0
+      volumeToken1
+      volumeUSD
+      untrackedVolumeUSD
+      token0Price
+      token1Price
+      feesUSD
+      feeTier
+      
+      liquidity
+      collectedFeesToken0
+      collectedFeesToken1
+      collectedFeesUSD
+      
+  }
+  
+  `
+  
+  axios.post(URL, {query: query})
+      .then((result) =>{
+          console.log(result.data.data)
+          pools = result.data.data
+          return pools
+      })
+  */
+
+      query = `
+{
+    pools {
+      id
+      token0 {
+        id
+        symbol
+      }
+      token1 {
+        id
+        symbol
+      }
+      feesUSD
+      feeTier
+    }
+  
+}
+
+`
+
+await axios.post(URL, {query: query})
+    .then((result) =>{
+      pools = result.data.data
+      
+      
+    })
+
+    return pools
+    
+
+
+
+
+}
