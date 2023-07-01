@@ -1,5 +1,5 @@
 const ethers = require('ethers'); // connect to blockchain 
-const { getAbi, getPoolData, getPoolFromTokens, _getAmountsOut, subgraphGetUniPools, subgraphGetSuhPools } = require('./helpers')
+const { getAbi, getPoolData, getPoolFromTokens, _getAmountsOut, subgraphGetUniPools, subgraphGetSuhPools, matchingSushiPools } = require('./helpers')
 
 const INFURA_URL = process.env.INFURA_URL
 const provider = new ethers.providers.JsonRpcProvider(INFURA_URL); //init provider
@@ -24,9 +24,10 @@ const SUH_SUBGRAPH_URL = 'https://api.thegraph.com/subgraphs/name/sushi-v3/v3-po
 const PATH = [token0, token1] //direction of swap ->
 
 const poolFinder = async (UNI_SUBGRAPH_URL) => {
+    console.log("working")
     //return list of all pool in Uni sushi with fee matched pairings
     const unipools = await subgraphGetUniPools()
-    const sushipools = await subgraphGetSuhPools()
+    //const sushipools = await subgraphGetSuhPools()
  
     //check through list of unipools for matching token1, token 2 and fee tier
     //you can't find matching pools by pulling in both subgraphs it will on show top 99
@@ -36,39 +37,65 @@ const poolFinder = async (UNI_SUBGRAPH_URL) => {
     //pull in the pools uniswap with the highest liquidity or trade volume
     //search the sushiswap sugraph for corresponding token pair and fee.
     //this ia the way to find matching trading pools.
-    
+    //console.log(sushipools.pools)
     matchingPools = []
+   
+    for (pool of unipools.liquidityPools){
 
-    for (pool in sushipools.pools){
-        console.log(pool)
+      matchingpool = {
+        sushiPoolID: "",
+        tokenPath: [],
+        tokenIDs:[],
+        feeTier:"",
+        uniPoolID:"",
+        name:""
+      }
         
+        let id = pool.id
+        let inputTokens = pool.inputTokens
+        let fees = pool.fees
+      
+        let token0id = inputTokens[0].id
+        let token1id = inputTokens[1].id
+        let feeTier = pool.fees[1].feePercentage * 10000
+
+        console.log(pool.name)
+        console.log(id)
+        console.log(token0id)
+        console.log(token1id)
+        console.log(feeTier) //3000 = 0.3 0.01 = 100 0.05
+       
+
+        let matchingSushiPool = await matchingSushiPools(token0id,token1id,feeTier)
+        console.log(matchingSushiPool)
+        console.log(matchingSushiPool.pools)
+        if (matchingSushiPool.pools.length!==0){
+          matchingpool.sushiPoolID = matchingSushiPool.pools[0].id
+          matchingpool.uniPoolID = id
+          matchingpool.name = pool.name
+          matchingpool.tokenPath = [matchingSushiPool.pools[0].token0.symbol,matchingSushiPool.pools[0].token1.symbol]
+          matchingpool.tokenIDs= [matchingSushiPool.pools[0].token0.id,matchingSushiPool.pools[0].token1.id]
+          matchingpool.feeTier = feeTier
+          matchingPools.push(matchingpool)
+        }
+
+
+
     }
+    console.log(matchingPools)
 
-    /*
-
-    for(pool in sushipools.pools){
-        /*console.log(pool.token0.id)
-        console.log(pool.token1.id)
-        console.log(pool.feeTier)
-        let _token0 = sushipools.pools[pool].token0.id
-        let _token1 = sushipools.pools[pool].token1.id
-        fee = sushipools.pools[pool].feeTier/10000 // divide by 10000
-        console.log(_token0)
-        console.log(_token1)
-        //console.log(fee)
-        
-        matchingUniPool = unipools.liquidityPools.filter( pool => {
-            return pool.inputTokens[0].id == _token1
-                && pool.inputTokens[1].id == _token0  //TOKEN 1 ID
-                //&& pool.fees[1].feePercentage === fee.toString()
-
-        })
-        console.log(matchingUniPool)
-        
-
-
-    }   */
-    //console.log(matchingPools)
+    /* Find a matching pool
+      {
+  pools(
+    where: {token0_: {id: "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270"}, token1_: {id: "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619"}}
+  ) {
+    id
+    feeTier
+  }
+}
+    
+    
+    */
 
     
 }

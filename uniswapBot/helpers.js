@@ -189,7 +189,7 @@ exports.subgraphGetUniPools = async () => {
   /*
   query = `
       {
-      pools(orderBy: volumeUSD, orderDirection:desc, first:10){
+      pools(orderBy: volumeUSD, orderDirection:desc, first:){
           id
           volumeUSD, 
           liquidity
@@ -208,10 +208,10 @@ exports.subgraphGetUniPools = async () => {
   
   query = `
   {
-    liquidityPools {
+    liquidityPools (orderBy: totalValueLockedUSD
+      orderDirection: desc
+      first: 50) {
       id
-      tick
-      cumulativeWithdrawCount
       name
       fees {
         feePercentage
@@ -220,15 +220,10 @@ exports.subgraphGetUniPools = async () => {
         id
         name
         symbol
-        lastPriceUSD
-        lastPriceBlockNumber
-        decimals
-        _lastPricedPool {
-          tick
-        }
+       
       }
-      activeLiquidity
-      activeLiquidityUSD
+      totalLiquidity
+      totalLiquidityUSD
       
     }
   }
@@ -247,81 +242,112 @@ exports.subgraphGetUniPools = async () => {
 }
 
 exports.subgraphGetSuhPools = async () => {
-  let pools ={}
+  let pools
   
   const URL = 'https://api.thegraph.com/subgraphs/name/sushi-v3/v3-polygon'
   
-  /*
-  
   query = `
   {
-    pools {
+    pools(
+      where: {token0_: {id: "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270"}, token1_: {id: "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619"}}
+    ) {
       id
-      token0 {
-        id
-        symbol
-      }
-      token1 {
-        id
-        symbol
-      }
-      volumeToken0
-      volumeToken1
-      volumeUSD
-      untrackedVolumeUSD
-      token0Price
-      token1Price
-      feesUSD
-      feeTier
-      
-      liquidity
-      collectedFeesToken0
-      collectedFeesToken1
-      collectedFeesUSD
-      
-  }
-  
-  `
-  
-  axios.post(URL, {query: query})
-      .then((result) =>{
-          console.log(result.data.data)
-          pools = result.data.data
-          return pools
-      })
-  */
-
-      query = `
-{
-    pools {
-      id
-      token0 {
-        id
-        symbol
-      }
-      token1 {
-        id
-        symbol
-      }
-      feesUSD
       feeTier
     }
-  
-}
-
-`
+  }`
+  _query = `
+      {
+      pools(orderBy: volumeUSD, orderDirection:desc, first:20){
+          id
+          volumeUSD
+          feeTier 
+          liquidity
+          totalValueLockedUSD
+          token0{
+              id
+              symbol
+          }
+          token1{
+              id
+              symbol
+          }
+          
+      }
+     
+  }
+  `
 
 await axios.post(URL, {query: query})
     .then((result) =>{
       pools = result.data.data
-      
+      console.log(result.data.data)
       
     })
 
     return pools
+
+
+
+
+    
     
 
 
 
 
 }
+
+exports.matchingSushiPools = async (token0,token1,feetier) => {
+  let pools
+  
+  const URL = 'https://api.thegraph.com/subgraphs/name/sushi-v3/v3-polygon'
+  
+  _query = `
+  {
+    pools(
+      where: {token0_: {id: "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270"}, token1_: {id: "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619"}}
+    ) {
+      id
+      feeTier
+    }
+  }`
+
+  query = `
+  {
+    pools(
+      where: {token0_: {id: "${token0}"},
+       token1_: {id: "${token1}"},
+       feeTier:"${feetier}"
+
+       
+      
+      }
+    ) {
+      id
+      feeTier
+      volumeUSD
+      token0{
+        id
+        symbol
+    }
+    token1{
+        id
+        symbol
+    }
+    }
+  }
+  `
+
+  
+  console.log(query)
+
+await axios.post(URL, {query: query})
+    .then((result) =>{
+      pools = result.data.data
+      //console.log(result.data.data)
+      
+    })
+
+    return pools
+
+  }
