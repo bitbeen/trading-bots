@@ -50,7 +50,7 @@ const main = async () => {
 
     //amount being passed into arbitraged - parse ether converts to wei (10^18)
     //const amountIn = ethers.utils.parseEther('1'); if you parse ether it reads it in wei 
-    const amountIn = 1
+    
    
 
     //get the respective uniswap and sushi swap pools for each token path

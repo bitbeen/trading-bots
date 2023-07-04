@@ -1,5 +1,6 @@
 const ethers = require('ethers'); // connect to blockchain 
 const { getAbi, getPoolData, getPoolFromTokens, _getAmountsOut, subgraphGetUniPools, subgraphGetSuhPools, matchingSushiPools } = require('./helpers')
+const { buyPoolTokens, uniSwapBasicTrade } = require('./tradehelpers')
 
 const INFURA_URL = process.env.INFURA_URL
 const provider = new ethers.providers.JsonRpcProvider(INFURA_URL); //init provider
@@ -50,20 +51,14 @@ const poolFinder = async (UNI_SUBGRAPH_URL) => {
         uniPoolID:"",
         name:""
       }
-        
-        let id = pool.id
-        let inputTokens = pool.inputTokens
-        let fees = pool.fees
+       
+   
       
-        let token0id = inputTokens[0].id
-        let token1id = inputTokens[1].id
+        let token0id = pool.inputTokens[0].id
+        let token1id = pool.inputTokens[1].id
         let feeTier = pool.fees[1].feePercentage * 10000
 
-        console.log(pool.name)
-        console.log(id)
-        console.log(token0id)
-        console.log(token1id)
-        console.log(feeTier) //3000 = 0.3 0.01 = 100 0.05
+    
        
 
         let matchingSushiPool = await matchingSushiPools(token0id,token1id,feeTier)
@@ -71,7 +66,7 @@ const poolFinder = async (UNI_SUBGRAPH_URL) => {
         console.log(matchingSushiPool.pools)
         if (matchingSushiPool.pools.length!==0){
           matchingpool.sushiPoolID = matchingSushiPool.pools[0].id
-          matchingpool.uniPoolID = id
+          matchingpool.uniPoolID = pool.id
           matchingpool.name = pool.name
           matchingpool.tokenPath = [matchingSushiPool.pools[0].token0.symbol,matchingSushiPool.pools[0].token1.symbol]
           matchingpool.tokenIDs= [matchingSushiPool.pools[0].token0.id,matchingSushiPool.pools[0].token1.id]
@@ -83,55 +78,107 @@ const poolFinder = async (UNI_SUBGRAPH_URL) => {
 
     }
     console.log(matchingPools)
+    return(matchingPools)
+    
 
-    /* Find a matching pool
-      {
-  pools(
-    where: {token0_: {id: "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270"}, token1_: {id: "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619"}}
-  ) {
-    id
-    feeTier
+    
+}
+
+
+const arbitrager = async (uniPool,sushiPool) => {
+  const amountIn = 1
+  
+  const poolAbiU = await getAbi(uniPool) // 0xe592427a0aece92de3edee1f18e0157c05861564
+  const poolAbiS = await getAbi(sushiPool)
+  const uniImmutables =  await getPoolData(uniPool,poolAbiU)
+  const sushiImmutables =  await getPoolData(sushiPool,poolAbiS)
+
+  let path = [uniImmutables.token0,uniImmutables.token1]
+
+  const uniPrice = await _getAmountsOut(amountIn, PATH, uniImmutables)
+  const sushiPrice = await _getAmountsOut(amountIn, PATH, sushiImmutables)
+
+  TX_FEE = uniImmutables.fee/(10**6) //the pool fee should comefrom immutables not manual
+    //pool transaction fee is different
+
+
+  let effUniPrice;
+  let effSushiPrice;
+  let spread;
+
+
+    console.log(TX_FEE + "TX")
+    if (uniPrice > sushiPrice){
+      effUniPrice = uniPrice - (uniPrice * TX_FEE)
+      effSushiPrice = sushiPrice +(sushiPrice * TX_FEE)
+      spread = effUniPrice - effSushiPrice
+
+      console.log(effUniPrice)
+      console.log(effSushiPrice)
+      console.log(spread)
+      console.log('uni to sushi spread:', spread)
+
+      if (spread > 0){
+          console.log('sell on uni, buy on sushi')
+      }else{
+          console.log('no arb opportunity')
+      }
+
+  }else if (sushiPrice > uniPrice){
+     effSushiPrice = sushiPrice - (sushiPrice * TX_FEE)
+     effUniPrice = uniPrice + (uniPrice * TX_FEE)
+     spread = effSushiPrice - effUniPrice
+     console.log('sushi to uni spread', spread)
+     console.log(effUniPrice)
+      console.log(effSushiPrice)
+      console.log(spread)
+
+     if (spread > 0){
+      console.log('sell on sushi, buy on uni') //should this be sushi
+      }else{
+      console.log('no arb opportunity')
+      }
   }
-}
-    
-    
-    */
-
-    
-}
-
-
-const arbitrager = async (token0,token1,amountIn) => {
-    //get pools on both uni and sushi swap 
-    //help function pulls booth pull addresses from the subgraphs
-    //subgraphs stop from the problem of needing fees.
-
-    //UNISWAP SUBGRAPH
-    //UNISWAP BASIC CALL
-    /*
-    {
-        liquidityPools {
-          inputTokens {
-            id
-            name
-            symbol
-            lastPriceUSD
-            lastPriceBlockNumber
-          }
-          activeLiquidity
-          activeLiquidityUSD
-          id
-          tick
-          cumulativeWithdrawCount
-          name
-          fees {
-            feePercentage
-          }
-        }
-      }*/
+  else{
+      effSushiPrice = sushiPrice -(sushiPrice * TX_FEE)
+      effUniPrice = uniPrice +(uniPrice * TX_FEE)
+      spread = effSushiPrice - effUniPrice
+      console.log(effUniPrice)
+      console.log(effSushiPrice)
+      console.log(spread)
+      console.log('sushi to uni spread', spread)
+      //console.log(spread) 
+      console.log('price is the same')
+      console.log('no arb opportunity')
+  }
 
 
+
+
+  //Quick project for after bot is complete
+  //Get brand new pools
+  //Buy token
+  //Sell when it hits certain price
+  //can do this on pancake too
+
+  //Rewatch video and figure out best steps
+  //Add Uni and sushiswap traders
+  //run swapper
+  //this would be sell token 1 for token0.
 
 }
 
-poolFinder()
+//poolFinder()
+
+arbitrager('0x98b9162161164de1ed182a0dfa08f5fbf0f733ca','0x4c3c28962d327085b088782523c867f2e7db8790')
+
+//Buy token 0 - tokens programmatically
+//Create Uniswapper and helper functions
+//Create Sushiswapper 
+
+//https://www.youtube.com/watch?v=Ve8Kp7hFES8
+
+//Create Swappers for Sell on Uni token 0 
+//Create Swappers for Buy on Uni token 0 
+//Create Swappers for Sell on Sushi token0
+//Create Swappers for Buy on Sushi token0
