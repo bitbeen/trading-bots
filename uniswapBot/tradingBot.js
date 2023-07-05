@@ -169,14 +169,15 @@ const arbitrager = async (uniPool,sushiPool) => {
 }
 
 //poolFinder()
+uniSwapBasicTrade()
 
-arbitrager('0x98b9162161164de1ed182a0dfa08f5fbf0f733ca','0x4c3c28962d327085b088782523c867f2e7db8790')
+//arbitrager('0x98b9162161164de1ed182a0dfa08f5fbf0f733ca','0x4c3c28962d327085b088782523c867f2e7db8790')
 
 //Buy token 0 - tokens programmatically
 //Create Uniswapper and helper functions
 //Create Sushiswapper 
 
-//https://www.youtube.com/watch?v=Ve8Kp7hFES8
+//https://www.youtube.com/watch?v=Ve8Kp7hFES8 - optimal swaps
 
 //Create Swappers for Sell on Uni token 0 
 //Create Swappers for Buy on Uni token 0 

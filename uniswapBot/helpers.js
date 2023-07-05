@@ -74,12 +74,12 @@ exports.getPoolImsSushi = async (poolAddress,poolAbi) => {
 exports.getPoolImmutables = async (poolContract) => {
     //get pool immutables just reads data from the pool contract
     //get more immutables instead of duplicating then pass immutables in for basetoken
-
+    /*
     const factoryContract = new ethers.Contract(
     factoryAddress,
     factoryAbi,
     provider
-  )
+  )*/
     
     const [token0, token1, fee, slot0] = await Promise.all([
       poolContract.token0(),
@@ -97,6 +97,16 @@ exports.getPoolImmutables = async (poolContract) => {
     }
   
     return immutables
+  }
+
+  exports.getPoolState = async (poolContract) => {
+    const slot = poolContract.slot0()
+  
+    const state = {
+      sqrtPriceX96: slot[0]
+    }
+  
+    return state
   }
 
 exports._getAmountsOut = async(amountIn,PATH, immutables) => {
