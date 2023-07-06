@@ -9,8 +9,8 @@ const WALLET_ADDRESS = process.env.WALLET_ADDRESS
 const WALLET_SECRET = process.env.WALLET_SECRET
 
 const provider = new ethers.providers.JsonRpcProvider(INFURA_URL)
-const poolAddress = '0x86f1d8390222a3691c28938ec7404a1661e618e0'//passed into function from previous
-const swapRouterAddress = '0xE592427A0AEce92De3Edee1F18E0157C05861564'
+//const poolAddress = '0x86f1d8390222a3691c28938ec7404a1661e618e0'//passed into function from previous
+
 
 
 /*
@@ -27,20 +27,28 @@ const swapRouterAddress = '0xE592427A0AEce92De3Edee1F18E0157C05861564'
   }
 
 
-*/
 
-const name0 = 'WMATIC Token'
+
+
 const symbol0 = 'WMATIC'
 const decimals0 = 18
 const address0 = '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270' //mainnet
 
-const name1 = ' WETH Token'
 const symbol1 = 'WETH'
 const decimals1 = 18
 const address1 = '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619'
+*/
 
-exports.uniSwapBasicTrade = async () => {
+exports.uniSwapBasicTrade = async (inputAmount, poolAddress, tokenIDs, tokenPath, tokenDecimals) => {
 	//buyPoolTokens
+  const symbol0 = tokenPath[0]
+  const decimals0 =  tokenDecimals[0]
+  const address0 = tokenIDs[0] //mainnet
+
+  const symbol1 = tokenPath[1]
+  const decimals1 =  tokenDecimals[1]
+  const address1 = tokenIDs[1] 
+  const swapRouterAddress = '0xE592427A0AEce92De3Edee1F18E0157C05861564'
 
 	console.log("swap started")
     const poolContract = new ethers.Contract(
@@ -65,16 +73,16 @@ exports.uniSwapBasicTrade = async () => {
 	  )
 
 	  console.log("connected to smart router contract")
-  const inputAmount = 0.01 //this is the amount being swapped DO NOT LEAVE THIS FOR WETH
+    const inputAmount = 0.01 //this is the amount being swapped DO NOT LEAVE THIS FOR WETH
   // .001 => 1 000 000 000 000 000
-  const amountIn = ethers.utils.parseUnits(
-    inputAmount.toString(),
-    decimals0
-  )
+    const amountIn = ethers.utils.parseUnits(
+      inputAmount.toString(),
+      decimals0
+    )
 
   const approvalAmount = (amountIn * 10).toString()//do not give access to everything in real versiom
   const ERC20ABI = await getAbi(address0)
-  console.log(ERC20ABI)
+  //console.log(ERC20ABI)
   console.log("connected to smart router contract")
   const tokenContract0 = new ethers.Contract(
     address0,
@@ -110,7 +118,7 @@ exports.uniSwapBasicTrade = async () => {
     sqrtPriceLimitX96: 0,
   }
   
-  const transaction = swapRouterContract.connect(connectedWallet).exactInputSingle(
+  const transaction = await swapRouterContract.connect(connectedWallet).exactInputSingle(
     params,
     {
       gasLimit: ethers.utils.hexlify(200000), //20000000
@@ -121,6 +129,8 @@ exports.uniSwapBasicTrade = async () => {
   })
 
   console.log("swap completed")
+  const receipt = await transaction.wait();
+  console.log('Transaction receipt', receipt);
 
 
 
@@ -131,8 +141,125 @@ exports.uniSwapOptimumTrade = async () => {
 
 }
 
-exports.sushiSwapBasicTrade = async () => {
+exports.sushiSwapBasicTrade = async (inputAmount, poolAddress, tokenIDs, tokenPath, tokenDecimals) => {
+  const symbol0 = tokenPath[0]
+  const decimals0 =  tokenDecimals[0]
+  const address0 = tokenIDs[0] //mainnet
+
+  const symbol1 = tokenPath[1]
+  const decimals1 =  tokenDecimals[1]
+  const address1 = tokenIDs[1] 
+
+  const swapRouterAddress = '0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506'
+  const swapRouterABI = await getAbi(swapRouterAddress)
 	//buyPoolTokens
+  console.log("swap started")
+  
+  const poolContract = new ethers.Contract(
+      poolAddress,
+      IUniswapV3PoolABI,
+      provider
+  )
+
+  const immutables = await getPoolImmutables(poolContract)
+  	const state = await getPoolState(poolContract)
+  	console.log("pool contract works ")
+
+	
+	  const wallet = new ethers.Wallet(WALLET_SECRET)
+	  const connectedWallet = wallet.connect(provider)
+	  console.log("wallet connected ")
+
+	  const swapRouterContract = new ethers.Contract(
+		swapRouterAddress,
+		swapRouterABI,
+		provider
+	  )
+
+	  console.log("connected to smart router contract")
+
+    const inputAmount = 0.01 //this is the amount being swapped DO NOT LEAVE THIS FOR WETH
+  // .001 => 1 000 000 000 000 000
+    const amountIn = ethers.utils.parseUnits(
+      inputAmount.toString(),
+      decimals0
+    )
+
+    const approvalAmount = (amountIn * 10).toString()//do not give access to everything in real versiom
+    const ERC20ABI = await getAbi(address0)
+    
+    console.log("connected to smart router contract")
+    const tokenContract0 = new ethers.Contract(
+      address0,
+      ERC20ABI,
+      //UNIABI,
+      provider
+    )
+  
+    gasPrice = await provider.getGasPrice()
+  
+  
+    const approvalResponse = await tokenContract0.connect(connectedWallet).approve(
+      swapRouterAddress,
+      amountIn,
+      {gasLimit: ethers.utils.hexlify(200000), //this is optimum gas for approval
+        gasPrice: ethers.utils.parseUnits("178", "gwei")}
+    ).then(
+  
+  
+    )
+  
+    console.log(approvalResponse)
+    console.log(ethers.constants.MaxUint256)
+      
+    /*
+    const params = {
+      //tokenIn: immutables.token0,
+      //tokenOut: immutables.token1,
+      //fee: immutables.fee,
+      //recipient: WALLET_ADDRESS,
+    
+      amountIn: amountIn,
+      amountOutMinimum: 20,//proper version change this
+      path: [address0,address1],
+      to: WALLET_ADDRESS,
+      deadline: Math.floor(Date.now() / 1000) + (60 * 2),//(60*5)(reduce to 2 mins)
+    }
+    console.log(amountIn)*/
+    
+    const  transaction =  swapRouterContract.connect(connectedWallet).swapExactTokensForTokensSupportingFeeOnTransferTokens(
+      amountIn,
+      0,
+      [address0,address1],
+      WALLET_ADDRESS,
+      Math.floor(Date.now() / 1000) + (60 * 10),
+      {gasLimit: ethers.utils.hexlify(200000), //this is optimum gas for approval
+        gasPrice: ethers.utils.parseUnits("178", "gwei")}
+      
+
+    ).then(transaction => {
+      console.log(transaction)
+      const transactionReceipt = provider.waitForTransaction(transaction.hash).then(
+        transactionReceipt => {
+          console.log(transactionReceipt);
+        }
+
+      );
+      
+      
+    })
+
+    console.log(transaction)
+
+    //const receipt = await transaction.wait();
+    //console.log('Transaction receipt', receipt);
+    //const transactionReceipt = provider.waitForTransaction(transaction.hash);
+    //console.log(transactionReceipt);
+
+   
+    //await logBalance(trader)
+
+    console.log("swap completed")
 
 }
 

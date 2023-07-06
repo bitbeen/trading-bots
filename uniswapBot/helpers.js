@@ -230,6 +230,7 @@ exports.subgraphGetUniPools = async () => {
         id
         name
         symbol
+        decimals
        
       }
       totalLiquidity
@@ -339,10 +340,12 @@ exports.matchingSushiPools = async (token0,token1,feetier) => {
       token0{
         id
         symbol
+        decimals
     }
     token1{
         id
         symbol
+        decimals
     }
     }
   }

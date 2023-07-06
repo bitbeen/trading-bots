@@ -1,7 +1,9 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\uniswapBot",
+    "\\UniswapTrader"
   ],
-  "SelectedNode": "\\basicArbitrage",
+  "SelectedNode": "\\UniswapTrader\\uniswapTraderHelper.js",
   "PreviewInSolutionExplorer": false
 }

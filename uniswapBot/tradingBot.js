@@ -1,6 +1,6 @@
 const ethers = require('ethers'); // connect to blockchain 
 const { getAbi, getPoolData, getPoolFromTokens, _getAmountsOut, subgraphGetUniPools, subgraphGetSuhPools, matchingSushiPools } = require('./helpers')
-const { buyPoolTokens, uniSwapBasicTrade } = require('./tradehelpers')
+const { buyPoolTokens, uniSwapBasicTrade, sushiSwapBasicTrade } = require('./tradehelpers')
 
 const INFURA_URL = process.env.INFURA_URL
 const provider = new ethers.providers.JsonRpcProvider(INFURA_URL); //init provider
@@ -47,6 +47,7 @@ const poolFinder = async (UNI_SUBGRAPH_URL) => {
         sushiPoolID: "",
         tokenPath: [],
         tokenIDs:[],
+        tokenDecimals:[],
         feeTier:"",
         uniPoolID:"",
         name:""
@@ -68,6 +69,7 @@ const poolFinder = async (UNI_SUBGRAPH_URL) => {
           matchingpool.sushiPoolID = matchingSushiPool.pools[0].id
           matchingpool.uniPoolID = pool.id
           matchingpool.name = pool.name
+          matchingpool.tokenDecimals= [matchingSushiPool.pools[0].token0.decimals,matchingSushiPool.pools[0].token1.decimals]
           matchingpool.tokenPath = [matchingSushiPool.pools[0].token0.symbol,matchingSushiPool.pools[0].token1.symbol]
           matchingpool.tokenIDs= [matchingSushiPool.pools[0].token0.id,matchingSushiPool.pools[0].token1.id]
           matchingpool.feeTier = feeTier
@@ -77,7 +79,7 @@ const poolFinder = async (UNI_SUBGRAPH_URL) => {
 
 
     }
-    console.log(matchingPools)
+    //console.log(matchingPools)
     return(matchingPools)
     
 
@@ -86,7 +88,7 @@ const poolFinder = async (UNI_SUBGRAPH_URL) => {
 
 
 const arbitrager = async (uniPool,sushiPool) => {
-  const amountIn = 1
+  const amountIn = 1 //CHANGE THIS ASAP!!!! PASS INTO FUNCTION
   
   const poolAbiU = await getAbi(uniPool) // 0xe592427a0aece92de3edee1f18e0157c05861564
   const poolAbiS = await getAbi(sushiPool)
@@ -168,14 +170,17 @@ const arbitrager = async (uniPool,sushiPool) => {
 
 }
 
-//poolFinder()
-uniSwapBasicTrade()
+//pools = poolFinder()
+//console.log(pools[3])
+//uniSwapBasicTrade(pools[3].uniPoolID, pools[3].tokenIDs, pools[3].tokenPath, pools[3].tokenDecimals)
 
 //arbitrager('0x98b9162161164de1ed182a0dfa08f5fbf0f733ca','0x4c3c28962d327085b088782523c867f2e7db8790')
 
 //Buy token 0 - tokens programmatically
 //Create Uniswapper and helper functions
+//Pass token and pool into basic
 //Create Sushiswapper 
+//Figure out gas for most recent trade and only trade at a profit of that
 
 //https://www.youtube.com/watch?v=Ve8Kp7hFES8 - optimal swaps
 
@@ -183,3 +188,15 @@ uniSwapBasicTrade()
 //Create Swappers for Buy on Uni token 0 
 //Create Swappers for Sell on Sushi token0
 //Create Swappers for Buy on Sushi token0
+
+const run = async (uniPool,sushiPool) => {
+  pools = await poolFinder()
+  choosenPool = pools[3] //pool with highest liquidity?
+  console.log(choosenPool)
+  /uniSwapBasicTrade(0.01, choosenPool.uniPoolID, choosenPool.tokenIDs, choosenPool.tokenPath, choosenPool.tokenDecimals)
+  sushiSwapBasicTrade(0.01, choosenPool.sushiPoolID, choosenPool.tokenIDs, choosenPool.tokenPath, choosenPool.tokenDecimals)
+
+
+}
+
+run()
