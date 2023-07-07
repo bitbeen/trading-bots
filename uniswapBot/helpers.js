@@ -138,6 +138,7 @@ return amountOut
 
 }
 
+
 exports.getPoolFromTokens = async (factoryAddress, factoryAbi, PATH,fee) =>{
   const factoryContract = new ethers.Contract(
     factoryAddress,
@@ -220,7 +221,7 @@ exports.subgraphGetUniPools = async () => {
   {
     liquidityPools (orderBy: totalValueLockedUSD
       orderDirection: desc
-      first: 50) {
+      first: 60) {
       id
       name
       fees {
@@ -242,7 +243,7 @@ exports.subgraphGetUniPools = async () => {
   
   await axios.post(URL, {query: query})
       .then((result) =>{
-          //console.log(result.data.data)
+          
           pools = result.data.data
          
           
@@ -291,7 +292,7 @@ exports.subgraphGetSuhPools = async () => {
 await axios.post(URL, {query: query})
     .then((result) =>{
       pools = result.data.data
-      console.log(result.data.data)
+      //console.log(result.data.data)
       
     })
 
@@ -351,8 +352,7 @@ exports.matchingSushiPools = async (token0,token1,feetier) => {
   }
   `
 
-  
-  console.log(query)
+
 
 await axios.post(URL, {query: query})
     .then((result) =>{

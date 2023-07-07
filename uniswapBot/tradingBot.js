@@ -63,8 +63,8 @@ const poolFinder = async (UNI_SUBGRAPH_URL) => {
        
 
         let matchingSushiPool = await matchingSushiPools(token0id,token1id,feeTier)
-        console.log(matchingSushiPool)
-        console.log(matchingSushiPool.pools)
+        //console.log(matchingSushiPool)
+        //console.log(matchingSushiPool.pools)
         if (matchingSushiPool.pools.length!==0){
           matchingpool.sushiPoolID = matchingSushiPool.pools[0].id
           matchingpool.uniPoolID = pool.id
@@ -79,7 +79,7 @@ const poolFinder = async (UNI_SUBGRAPH_URL) => {
 
 
     }
-    //console.log(matchingPools)
+    
     return(matchingPools)
     
 
@@ -87,13 +87,13 @@ const poolFinder = async (UNI_SUBGRAPH_URL) => {
 }
 
 
-const arbitrager = async (uniPool,sushiPool) => {
-  const amountIn = 1 //CHANGE THIS ASAP!!!! PASS INTO FUNCTION
+const arbitrager = async (choosenPool,amountIn) => {
+   //CHANGE THIS ASAP!!!! PASS INTO FUNCTION
   
-  const poolAbiU = await getAbi(uniPool) // 0xe592427a0aece92de3edee1f18e0157c05861564
-  const poolAbiS = await getAbi(sushiPool)
-  const uniImmutables =  await getPoolData(uniPool,poolAbiU)
-  const sushiImmutables =  await getPoolData(sushiPool,poolAbiS)
+  const poolAbiU = await getAbi(choosenPool.uniPoolID) // 0xe592427a0aece92de3edee1f18e0157c05861564
+  const poolAbiS = await getAbi(choosenPool.sushiPoolID)
+  const uniImmutables =  await getPoolData(choosenPool.uniPoolID,poolAbiU)
+  const sushiImmutables =  await getPoolData(choosenPool.sushiPoolID,poolAbiS)
 
   let path = [uniImmutables.token0,uniImmutables.token1]
 
@@ -102,6 +102,8 @@ const arbitrager = async (uniPool,sushiPool) => {
 
   TX_FEE = uniImmutables.fee/(10**6) //the pool fee should comefrom immutables not manual
     //pool transaction fee is different
+  
+  
 
 
   let effUniPrice;
@@ -111,6 +113,7 @@ const arbitrager = async (uniPool,sushiPool) => {
 
     console.log(TX_FEE + "TX")
     if (uniPrice > sushiPrice){
+      //revisit arbitrager and getting prices
       effUniPrice = uniPrice - (uniPrice * TX_FEE)
       effSushiPrice = sushiPrice +(sushiPrice * TX_FEE)
       spread = effUniPrice - effSushiPrice
@@ -122,6 +125,18 @@ const arbitrager = async (uniPool,sushiPool) => {
 
       if (spread > 0){
           console.log('sell on uni, buy on sushi')
+
+
+          console.log('SANITY TEST')
+          let swapData = await uniSwapBasicTrade(amountIn, choosenPool.uniPoolID, choosenPool.tokenIDs, choosenPool.tokenPath, choosenPool.tokenDecimals)
+          console.log("first trade")
+          console.log(swapData)
+          let fee = choosenPool.feeTier/ 10000
+          amountInFeeAccount = swapData.amount1 + (swapData.amount1 *(fee/100))
+          swapData = await sushiSwapBasicTrade(amountInFeeAccount, choosenPool.sushiPoolID, choosenPool.tokenIDs.reverse(), choosenPool.tokenPath.reverse(), choosenPool.tokenDecimals.reverse())
+          console.log("second trade")
+          console.log(swapData)
+          
       }else{
           console.log('no arb opportunity')
       }
@@ -137,6 +152,37 @@ const arbitrager = async (uniPool,sushiPool) => {
 
      if (spread > 0){
       console.log('sell on sushi, buy on uni') //should this be sushi
+      console.log('SANITY TEST')
+          let swapData = await sushiSwapBasicTrade(amountIn, choosenPool.sushiPoolID, choosenPool.tokenIDs, choosenPool.tokenPath, choosenPool.tokenDecimals)
+          console.log("first trade")
+          console.log(swapData)
+          let fee = choosenPool.feeTier/ 10000
+          amountInFeeAccount = swapData.amount1 + (swapData.amount1 *(fee/100))
+
+          swapData = await uniSwapBasicTrade(amountInFeeAccount, choosenPool.uniPoolID, choosenPool.tokenIDs.reverse(), choosenPool.tokenPath.reverse(), choosenPool.tokenDecimals.reverse())
+          console.log("second trade")
+          console.log(swapData)
+          //Sell 0.1 of token 0 on uniswap more expensice for token 1
+          //Buy 0.1 of token 0 on sushiswap with token 1
+          /*
+          await sushiSwapBasicTrade(amountIn, choosenPool.sushiPoolID, choosenPool.tokenIDs, choosenPool.tokenPath, choosenPool.tokenDecimals).then( results1 => {
+            console.log("first trade")
+            console.log(results1)
+            
+
+            uniSwapBasicTrade(results1.amount1, choosenPool.uniPoolID, choosenPool.tokenIDs.reverse(), choosenPool.tokenPath.reverse(), choosenPool.tokenDecimals.reverse()).then( results2 => {
+              console.log("second trade")
+              console.log(results2)
+
+            })
+            
+            
+
+          })*/
+        
+
+
+         
       }else{
       console.log('no arb opportunity')
       }
@@ -152,6 +198,10 @@ const arbitrager = async (uniPool,sushiPool) => {
       //console.log(spread) 
       console.log('price is the same')
       console.log('no arb opportunity')
+
+      
+
+      
   }
 
 
@@ -189,13 +239,80 @@ const arbitrager = async (uniPool,sushiPool) => {
 //Create Swappers for Sell on Sushi token0
 //Create Swappers for Buy on Sushi token0
 
-const run = async (uniPool,sushiPool) => {
+const run = async () => {
   pools = await poolFinder()
-  choosenPool = pools[3] //pool with highest liquidity?
-  console.log(choosenPool)
-  /uniSwapBasicTrade(0.01, choosenPool.uniPoolID, choosenPool.tokenIDs, choosenPool.tokenPath, choosenPool.tokenDecimals)
-  sushiSwapBasicTrade(0.01, choosenPool.sushiPoolID, choosenPool.tokenIDs, choosenPool.tokenPath, choosenPool.tokenDecimals)
+  for  (choosenPool in pools){
+    console.log(choosenPool)
+    console.log(pools[choosenPool].tokenPath)
+  }
+    console.log(pools.length)
+    
+    choosenPool = pools[11]
+    console.log(choosenPool)
+    let fee = choosenPool.feeTier/ 10000
+    const amountIn = 1
+    const amountInFeeAccount = amountIn + (amountIn *(fee/100))
 
+
+    //worth swapping back amount including fee too.
+    //symbol1: 'AAVE', approve is not a function - get proxy time
+    console.log(amountInFeeAccount) 
+
+    arbitrager(choosenPool, amountInFeeAccount)
+  /*
+  for  (let choosenPool in pools){
+    console.log(pools.length)
+    console.log(choosenPool)
+    let fee = choosenPool.feeTier/ 10000
+    const amountIn = 1
+    const amountInFeeAccount = amountIn + (amountIn *(fee/100))
+  //const amountInFee = (0.01)
+    console.log(amountInFeeAccount) 
+
+    arbitrager(choosenPool, amountInFeeAccount)
+
+  }*/
+  //choosenPool = pools[2] //pool with highest liquidity or some other factor?
+  
+  //console.log(choosenPool)
+  
+  
+
+  
+  /*
+  results = await uniSwapBasicTrade(0.01, choosenPool.uniPoolID, choosenPool.tokenIDs, choosenPool.tokenPath, choosenPool.tokenDecimals)
+  console.log(results)
+  */
+
+  
+
+
+
+  //results = await sushiSwapBasicTrade(0.01, choosenPool.sushiPoolID, choosenPool.tokenIDs, choosenPool.tokenPath, choosenPool.tokenDecimals)
+  //console.log(results)
+
+  
+
+  
+
+  /*
+  swapsURev = await uniSwapBasicTrade(0.01, choosenPool.uniPoolID, choosenPool.tokenIDs, choosenPool.tokenPath, cho
+    osenPool.tokenDecimals).then( swapDataUni => {
+    console.log(swapDataUni)
+  })*/
+
+  /*let swapDataUni = await uniSwapBasicTrade(0.01, choosenPool.uniPoolID, choosenPool.tokenIDs, choosenPool.tokenPath, choosenPool.tokenDecimals).then( swapDataUni =>{
+    console.log(swapDataUni)
+  })*/
+  
+  /*
+  let swapDataSushi = await sushiSwapBasicTrade(0.01, choosenPool.sushiPoolID, choosenPool.tokenIDs.reverse(), choosenPool.tokenPath.reverse(), choosenPool.tokenDecimals.reverse()).then( swapDataSushi =>{
+    console.log(swapDataSushi)
+  }
+    
+  )*/
+  
+  //arbitrager(choosenPool.uniPoolID, choosenPool.sushiPoolID)
 
 }
 

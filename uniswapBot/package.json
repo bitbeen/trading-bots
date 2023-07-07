@@ -17,5 +17,8 @@
     "dotenv": "^16.0.3",
     "ethers": "^5.7.2",
     "jsbi": "^3.2.5"
+  },
+  "devDependencies": {
+    "abi-decoder": "^2.4.0"
   }
 }
