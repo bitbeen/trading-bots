@@ -109,7 +109,7 @@ exports.getPoolImmutables = async (poolContract) => {
     return state
   }
 
-exports._getAmountsOut = async(amountIn,PATH, immutables) => {
+exports._getAmountsOut = async(amountIn,PATH, tick, decimalsPATH) => {
 
 const baseToken = PATH[0] //token being swapped in 
 const quoteToken =PATH[1] //token being swapped out
@@ -119,13 +119,13 @@ const inputAmount = amountIn //1 WBTC
 
 //pool address required for base token decimals and tick
 
-const currentTick = immutables.slot0.tick //avialable form swap pool contract
+const currentTick = tick //avialable form swap pool contract
 //ticks could be negative not worth getting sqrt of negative
 //const sqrtPriceX96 = immutables.slot0.sqrtPriceX96
 
 //worth reading decimals from contract moving forward but for now just 18
-const baseTokenDecimals = 18 //WBTC uses 8 decimal places
-const quoteTokenDecimals = 18 //almost all ERC use 18 decem
+const baseTokenDecimals = decimalsPATH[0] //WBTC uses 8 decimal places
+const quoteTokenDecimals = decimalsPATH[1] //almost all ERC use 18 decem
 
 const sqrtRatioX96 = TickMath.getSqrtRatioAtTick(currentTick) //gives us sqrt of tick value
 const ratioX192 = JSBI.multiply(sqrtRatioX96,sqrtRatioX96) //multiply big int by itself to get sqaure value
@@ -195,33 +195,60 @@ exports.handleProxyTokenContract = async (tokenAddress, tokenAbi) =>{
 exports.subgraphGetUniPools = async () => {
   const URL = 'https://api.thegraph.com/subgraphs/name/messari/uniswap-v3-polygon'
   let pools ={}
-  //const URLS = 'https://api.thegraph.com/subgraphs/name/sushi-v3/v3-polygon'
+  /** Get pools from uniswap pools */
   
-  /*
-  query = `
-      {
-      pools(orderBy: volumeUSD, orderDirection:desc, first:){
-          id
-          volumeUSD, 
-          liquidity
-          totalValueLockedUSD
-          token0{
-              symbol
-          }
-          token1{
-              symbol
-          }
-          
-      }
-     
-  }
-  `*/
   
   query = `
   {
-    liquidityPools (orderBy: totalValueLockedUSD
+    liquidityPools (
+      orderBy: totalValueLockedUSD
       orderDirection: desc
       first: 60) {
+      id
+      name
+      fees {
+        feePercentage
+      }
+      inputTokens {
+        id
+        name
+        symbol
+        decimals
+       
+      }
+      totalLiquidity
+      totalLiquidityUSD
+      
+    }
+  }
+  `
+  
+  await axios.post(URL, {query: query})
+      .then((result) =>{
+          
+          pools = result.data.data
+         
+          
+      })
+      return pools
+      
+  
+}
+
+exports.subgraphGetVolatileUniPools = async () => {
+  const URL = 'https://api.thegraph.com/subgraphs/name/messari/uniswap-v3-polygon'
+  let pools ={}
+  /** Get pools from uniswap pools */
+  
+  
+  query = `
+  {
+    liquidityPools (
+      orderBy: totalValueLockedUSD
+      orderDirection: desc
+      first: 20
+      where: {inputTokens_: {symbol: "WMATIC"}})
+       {
       id
       name
       fees {
@@ -362,5 +389,36 @@ await axios.post(URL, {query: query})
     })
 
     return pools
+
+  }
+
+
+  
+exports.getTokenData = async (token) => {
+  console.log(token)
+  
+  const URL = 'https://api.thegraph.com/subgraphs/name/messari/uniswap-v3-polygon'
+  
+  query = `
+  {
+    token(id: "${token}") {
+      decimals
+      symbol
+      id
+    }
+  }`
+
+  
+
+
+
+await axios.post(URL, {query: query})
+    .then((result) =>{
+      token = result.data.data.token
+      //console.log(result.data)
+      
+    })
+
+    return token
 
   }

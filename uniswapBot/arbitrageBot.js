@@ -1,20 +1,11 @@
 const ethers = require('ethers'); // connect to blockchain 
-const { getAbi, getPoolData, getPoolFromTokens, _getAmountsOut, subgraphGetUniPools, subgraphGetSuhPools, matchingSushiPools } = require('./helpers')
+const { getAbi, getPoolData, getPoolFromTokens, _getAmountsOut, subgraphGetUniPools, subgraphGetVolatileUniPools, matchingSushiPools } = require('./helpers')
 const { buyPoolTokens, uniSwapBasicTrade, sushiSwapBasicTrade } = require('./tradehelpers')
 
 const INFURA_URL = process.env.INFURA_URL
 const provider = new ethers.providers.JsonRpcProvider(INFURA_URL); //init provider
 
 
-const token0 = '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270'; // WMATIC
-const token1 = '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619'; // WETH
-
-//const token0 = '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619'; // WMATIC
-//const token1 = '0xd6df932a45c0f255f85145f286ea0b292b21c90b'; // AAVE
-
-
-//const uniRouterAddress = '0xE592427A0AEce92De3Edee1F18E0157C05861564'
-//const sushiRouterAddress = '0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506' //polygon address
 
 const uniFactoryAddress = "0x1F98431c8aD98523631AE4a59f267346ea31F984";
 const sushiFactoryAddress = "0x917933899c6a5F8E37F31E19f92CdBFF7e8FF0e2";
@@ -27,7 +18,7 @@ const PATH = [token0, token1] //direction of swap ->
 const poolFinder = async (UNI_SUBGRAPH_URL) => {
     console.log("working")
     //return list of all pool in Uni sushi with fee matched pairings
-    const unipools = await subgraphGetUniPools()
+    const unipools = await subgraphGetVolatileUniPools()
     //const sushipools = await subgraphGetSuhPools()
  
     //check through list of unipools for matching token1, token 2 and fee tier
@@ -101,6 +92,8 @@ const arbitrager = async (choosenPool,amountIn) => {
   const sushiPrice = await _getAmountsOut(amountIn, PATH, sushiImmutables)
 
   TX_FEE = uniImmutables.fee/(10**6) //the pool fee should comefrom immutables not manual
+  
+  SLIPPAGE = 0.05
     //pool transaction fee is different
   
   
@@ -114,8 +107,10 @@ const arbitrager = async (choosenPool,amountIn) => {
     console.log(TX_FEE + "TX")
     if (uniPrice > sushiPrice){
       //revisit arbitrager and getting prices
-      effUniPrice = uniPrice - (uniPrice * TX_FEE)
-      effSushiPrice = sushiPrice +(sushiPrice * TX_FEE)
+      /*effUniPrice = uniPrice - (uniPrice * TX_FEE) //account for slippage too be worth grabbing the slippage factors of both pools too
+      effSushiPrice = sushiPrice +(sushiPrice * TX_FEE)*/
+      effUniPrice = uniPrice - (uniPrice * TX_FEE) - (uniPrice * SLIPPAGE) //account for slippage too be worth grabbing the slippage factors of both pools too
+      effSushiPrice = sushiPrice +(sushiPrice * TX_FEE) + (sushiPrice * SLIPPAGE)
       spread = effUniPrice - effSushiPrice
 
       console.log(effUniPrice)
@@ -142,8 +137,10 @@ const arbitrager = async (choosenPool,amountIn) => {
       }
 
   }else if (sushiPrice > uniPrice){
-     effSushiPrice = sushiPrice - (sushiPrice * TX_FEE)
-     effUniPrice = uniPrice + (uniPrice * TX_FEE)
+     /*effSushiPrice = sushiPrice - (sushiPrice * TX_FEE)
+     effUniPrice = uniPrice + (uniPrice * TX_FEE)*/
+     effSushiPrice = sushiPrice - (sushiPrice * TX_FEE) - (sushiPrice * SLIPPAGE)
+     effUniPrice = uniPrice + (uniPrice * TX_FEE) + (uniPrice * SLIPPAGE)
      spread = effSushiPrice - effUniPrice
      console.log('sushi to uni spread', spread)
      console.log(effUniPrice)
@@ -188,8 +185,11 @@ const arbitrager = async (choosenPool,amountIn) => {
       }
   }
   else{
+    /*
       effSushiPrice = sushiPrice -(sushiPrice * TX_FEE)
-      effUniPrice = uniPrice +(uniPrice * TX_FEE)
+      effUniPrice = uniPrice +(uniPrice * TX_FEE)*/
+      effSushiPrice = sushiPrice -(sushiPrice * TX_FEE) - (sushiPrice * SLIPPAGE)
+      effUniPrice = uniPrice +(uniPrice * TX_FEE)+ (uniPrice * SLIPPAGE)
       spread = effSushiPrice - effUniPrice
       console.log(effUniPrice)
       console.log(effSushiPrice)
@@ -244,6 +244,7 @@ const run = async () => {
   for  (choosenPool in pools){
     console.log(choosenPool)
     console.log(pools[choosenPool].tokenPath)
+    console.log(pools[choosenPool].tokenIDs)
   }
     console.log(pools.length)
     
@@ -251,7 +252,7 @@ const run = async () => {
     console.log(choosenPool)
     let fee = choosenPool.feeTier/ 10000
     const amountIn = 1
-    const amountInFeeAccount = amountIn + (amountIn *(fee/100))
+    const amountInFeeAccount = amountIn + (amountIn *(fee/100)) + (amountIn *0.05) //could worth calculating slippage
 
 
     //worth swapping back amount including fee too.

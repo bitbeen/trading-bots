@@ -1,8 +1,19 @@
-const { ethers } = require('ethers')
+const { ethers, BigNumber } = require('ethers')
 const abiDecoder = require('abi-decoder')
 const { abi: IUniswapV3PoolABI } = require('@uniswap/v3-core/artifacts/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json')
 const { abi: SwapRouterABI} = require('@uniswap/v3-periphery/artifacts/contracts/interfaces/ISwapRouter.sol/ISwapRouter.json')
+const {Quoter} = require('@uniswap/v3-periphery/artifacts/contracts/lens/Quoter.sol/Quoter.json')
 const { getPoolImmutables, getPoolState, getAbi } = require('./helpers')
+
+
+const {AlphaRouter,ChainId,SwapOptionsSwapRouter02,SwapRoute,SwapType} = require('@uniswap/smart-order-router')
+const { Token, CurrencyAmount, TradeType, Percent } = require('@uniswap/sdk-core')
+
+const JSBI  = require('jsbi') // jsbi@3.2.5
+
+const V3_SWAP_ROUTER_ADDRESS = '0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45'
+
+
 
 require('dotenv').config()
 const INFURA_URL = process.env.INFURA_URL
@@ -11,37 +22,124 @@ const WALLET_SECRET = process.env.WALLET_SECRET
 const API_KEY = process.env.ETHERSCAN_API_KEY
 
 const provider = new ethers.providers.JsonRpcProvider(INFURA_URL)
-//const poolAddress = '0x86f1d8390222a3691c28938ec7404a1661e618e0'//passed into function from previous
+const QUOTER_ADDRESS = '0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6'
+
+exports.getCurrentPriceUni = async (addressPath,symbolPath,decimalPath, amountIn ) => {
+  //tokenIds,tokenPath, tokenDecimals,amountIn,token1,fee,sqrtPriceLimitX96, decimals0
+  const chainId = 137
+  const router = new AlphaRouter({ chainId: chainId, provider: provider})
+
+  
+  
+  const symbol0 = symbolPath[0]
+  const decimals0 = decimalPath[0]
+  const address0 = addressPath[0]
+
+ 
+  const symbol1 = symbolPath[1]
+  const decimals1 = decimalPath[1]
+  const address1 = addressPath[1]
+
+//const WETH = new Token(chainId, address0, decimals0, symbol0, name0)
+//const UNI = new Token(chainId, address1, decimals1, symbol1, name1)
+const WETH = new Token(chainId, address0, decimals0)
+const UNI = new Token(chainId, address1, decimals1)
+
+  const wei = ethers.utils.parseUnits(amountIn.toString(), 18)
+  const inputAmount = CurrencyAmount.fromRawAmount(WETH, JSBI.BigInt(wei))
+
+  const route = await router.route(
+    inputAmount,
+    UNI,
+    TradeType.EXACT_INPUT,
+    {
+      recipient: WALLET_ADDRESS,
+      slippageTolerance: new Percent(25, 100),
+      deadline: Math.floor(Date.now()/1000 + 1800),
+      type: SwapType.SWAP_ROUTER_02
+    }
+  )
+
+  console.log(`Quote Exact In: ${route.quote.toFixed(10)}`)
+  console.log(`1 ${symbol0} can be swapped for ${route.quote.toFixed(10)} ${symbol1}`)
+  return(route.quote.toFixed(10))
 
 
-
+}
 /*
-{
-    sushiPoolID: '0xf1a12338d39fc085d8631e1a745b5116bc9b2a32',
-    tokenPath: [ 'WMATIC', 'WETH' ],
-    tokenIDs: [
-      '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
-      '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619'
-    ],
-    feeTier: 500,
-    uniPoolID: '0x86f1d8390222a3691c28938ec7404a1661e618e0',
-    name: 'Uniswap V3 Wrapped Matic/Wrapped Ether 0.05%'
+exports.uniSwapOptimumTrade = async (addressPath,symbolPath,decimalPath, amountIn ) => {
+  //tokenIds,tokenPath, tokenDecimals,amountIn,token1,fee,sqrtPriceLimitX96, decimals0
+  const chainId = 137
+  const router = new AlphaRouter({ chainId: chainId, provider: provider})
+
+  
+  
+  const symbol0 = symbolPath[0]
+  const decimals0 = decimalPath[0]
+  const address0 = addressPath[0]
+
+ 
+  const symbol1 = symbolPath[1]
+  const decimals1 = decimalPath[1]
+  const address1 = addressPath[1]
+
+//const WETH = new Token(chainId, address0, decimals0, symbol0, name0)
+//const UNI = new Token(chainId, address1, decimals1, symbol1, name1)
+
+
+
+
+  const wei = ethers.utils.parseUnits(amountIn.toString(), 18)
+  const inputAmount = CurrencyAmount.fromRawAmount(WETH, JSBI.BigInt(wei))
+
+  const route = await router.route(
+    inputAmount,
+    UNI,
+    TradeType.EXACT_INPUT,
+    {
+      recipient: WALLET_ADDRESS,
+      slippageTolerance: new Percent(25, 100),
+      deadline: Math.floor(Date.now()/1000 + 1800),
+      type: SwapType.SWAP_ROUTER_02
+    }
+  )
+
+  console.log(`Quote Exact In: ${route.quote.toFixed(10)}`)
+  console.log(`1 ${symbol0} can be swapped for ${route.quote.toFixed(10)} ${symbol1}`)
+  //return(route.quote.toFixed(10))
+
+
+
+
+
+  const transaction = {
+    data: route.methodParameters.calldata,
+    to: V3_SWAP_ROUTER_ADDRESS,
+    value: BigNumber.from(route.methodParameters.value),
+    from: WALLET_ADDRESS,
+    gasPrice: BigNumber.from(route.gasPriceWei),
+    gasLimit: ethers.utils.hexlify(1000000)
   }
 
+  const wallet = new ethers.Wallet(WALLET_SECRET)
+  const connectedWallet = wallet.connect(provider)
+
+  const approvalAmount = ethers.utils.parseUnits('1', 18).toString()
+  const ERC20ABI = await getAbi(address0)
+  const contract0 = new ethers.Contract(address0, ERC20ABI, provider)
+  await contract0.connect(connectedWallet).approve(
+    V3_SWAP_ROUTER_ADDRESS,
+    approvalAmount
+  )
+
+  const tradeTransaction = await connectedWallet.sendTransaction(transaction)
+
+
+}*/
 
 
 
-
-const symbol0 = 'WMATIC'
-const decimals0 = 18
-const address0 = '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270' //mainnet
-
-const symbol1 = 'WETH'
-const decimals1 = 18
-const address1 = '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619'
-*/
-
-exports.uniSwapBasicTrade = async (inputAmount, poolAddress, tokenIDs, tokenPath, tokenDecimals,swapData) => {
+exports.uniSwapBasicTrade = async (inputAmount, poolAddress, tokenIDs, tokenPath, tokenDecimals) => {
 	//buyPoolTokens
   var symbol0 = tokenPath[0]
   var decimals0 =  tokenDecimals[0]
@@ -97,14 +195,19 @@ exports.uniSwapBasicTrade = async (inputAmount, poolAddress, tokenIDs, tokenPath
     provider
   )
 
-  gasPrice = await provider.getGasPrice()
+  //HANDLE PROXY CONTRACTS HERE 
+
+  let gasPrice = await provider.getGasPrice()
+  let gasPriceGWEI = ethers.utils.formatUnits(gasPrice, "gwei")
+  let gasBuffered = Math.round(gasPriceGWEI + 25)
+  console.log(`gas price ${gasBuffered.toString()}`)
 
 
   const approvalResponse = await tokenContract0.connect(connectedWallet).approve(
     swapRouterAddress,
     amountIn,
     {gasLimit: ethers.utils.hexlify(200000), //this is optimum gas for approval
-      gasPrice: ethers.utils.parseUnits("200", "gwei")}
+      gasPrice: ethers.utils.parseUnits(gasBuffered.toString(), "gwei")}
   ).then(
 
     
@@ -123,17 +226,21 @@ exports.uniSwapBasicTrade = async (inputAmount, poolAddress, tokenIDs, tokenPath
     amountOutMinimum: 0,//proper version change this maybe pull in arb data
     sqrtPriceLimitX96: 0,
   }
-  console.log(params)
+ 
+  gasPrice = await provider.getGasPrice()
+  gasPriceGWEI = ethers.utils.formatUnits(gasPrice, "gwei")
+  gasBuffered = Math.round(gasPriceGWEI + 25)
+  console.log(`gas price ${gasBuffered.toString()}`)
   
   const transaction = await swapRouterContract.connect(connectedWallet).exactInputSingle(
     params,
     {
       gasLimit: ethers.utils.hexlify(200000), //20000000
-      gasPrice: ethers.utils.parseUnits("178", "gwei")
+      gasPrice: ethers.utils.parseUnits(gasBuffered.toString(), "gwei")
     }
   ).then(async transaction => {
-    console.log("transaction metadata")
-    console.log(transaction);
+    //console.log("transaction metadata")
+    console.log(`transaction hash ${transaction.hash}`);
    
     const transactionReceipt = await provider.waitForTransaction(transaction.hash).then(
       transactionReceipt => {
@@ -186,10 +293,7 @@ exports.uniSwapBasicTrade = async (inputAmount, poolAddress, tokenIDs, tokenPath
 
 }
 
-exports.uniSwapOptimumTrade = async () => {
-	//buyPoolTokens
 
-}
 
 exports.sushiSwapBasicTrade = async (inputAmount, poolAddress, tokenIDs, tokenPath, tokenDecimals) => {
   const symbol0 = tokenPath[0]
