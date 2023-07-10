@@ -1,0 +1,124 @@
+
+
+
+
+
+
+Learn 
+
+ - New Pool Bot
+ - - Review Pools created today (epoch time stamp)
+ - - Buy 0.1 Matic of each token
+ - - CSV Output of tokens purchased at price.
+
+ - Optimum  swap vs regular swap performance
+
+ - Learn about basic linear reg prediction 
+
+ 
+- To get the easiest way to use flash swaps if the amount out is higher than amount in you will Profit
+- find a pool where this is happening
+- trade one flash swap in it 
+- profit 
+
+
+
+ /*
+ Price history graph query
+ https://www.geckoterminal.com/dex-api coingeck query
+
+
+
+- New Pool Check if okay
+{
+  liquidityPools(orderBy: createdTimestamp, orderDirection: desc) {
+    name
+    createdTimestamp
+    id
+    activeLiquidity
+    totalLiquidity
+  }
+} - new uniswap pools 
+  - check if active liquidity is not 0
+  - Divide by 1.5k to get USDC 
+ - This gets hourly data
+{
+  liquidityPool(id: "0x7f9121b4f4e040fd066e9dc5c250cf9b4338d5bc") {
+    name
+    hourlySnapshots {
+      hour
+      pool {
+        inputTokens {
+          lastPriceUSD
+        }
+      }
+      timestamp
+      tick
+      activeLiquidity
+    }
+  }
+}  
+
+- This gets daily data
+{
+  liquidityPool(id: "0x7f9121b4f4e040fd066e9dc5c250cf9b4338d5bc") {
+    name
+    dailySnapshots {
+      day
+      pool {
+        inputTokens {
+          lastPriceUSD
+        }
+      }
+      timestamp
+      tick
+    }
+  }
+}  
+
+
+
+
+ {
+  swaps(
+    first: 10
+    where: {pool_: {id: "0x98b9162161164de1ed182a0dfa08f5fbf0f733ca"}}
+    orderBy: timestamp
+    orderDirection: desc
+  ) {
+    pool {
+      name
+      tick
+    }
+    tick
+    tokenIn {
+      lastPriceUSD
+    }
+    tokenOut {
+      lastPriceUSD
+    }
+    timestamp
+  }
+}
+ 
+ 
+ */
+
+
+ - Simple Trading Bot
+ - - Trade on Sushi
+ - - - Look for volatile Trading pool
+ - - - Make Swap
+ - - - Leave running
+ - - - Wait for price increase of 5%
+ - - - Reverse Swap
+ - - - Profit
+ - - - Try with 2 new pools, 2 high volume pools
+
+
+ 
+ TRADING BOT
+ - one for starting a new trading
+ - one for checking existing pools with live trade
+ - one for starting new trade on newly uploaded pooal
+

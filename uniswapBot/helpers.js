@@ -18,6 +18,15 @@ exports.getAbi = async (address) => {
     return abi
 }
 
+const getAbi = async (address) => {
+  //const url = `https://api.polygonscan.io/api?module=contract&action=getabi&address=${address}&apikey=${ETHERSCAN_API_KEY}`
+  const url = `https://api.polygonscan.com/api?module=contract&action=getabi&address=${address}&apikey=${ETHERSCAN_API_KEY}`
+  
+  const res = await axios.get(url)
+  const abi = JSON.parse(res.data.result)
+  return abi
+}
+
 exports.getPoolData= async (poolAddress,poolAbi) => {
     //get pool immutables just reads data from the pool contract
     //get more immutables instead of duplicating then pass immutables in for basetoken
@@ -422,3 +431,40 @@ await axios.post(URL, {query: query})
     return token
 
   }
+
+
+  exports.getRecentSwapData = async (token) => {
+    console.log(token)
+    
+    const URL = 'https://api.thegraph.com/subgraphs/name/messari/uniswap-v3-polygon'
+    
+    query = `
+    {
+      swaps(orderBy: timestamp, orderDirection: desc, first: 200) {
+        amountIn
+        amountInUSD
+        amountOut
+        amountOutUSD
+        id
+        timestamp
+        pool {
+          name
+          id
+        }
+      }
+    }`
+  
+    
+  
+  
+  
+  await axios.post(URL, {query: query})
+      .then((result) =>{
+        _data = result.data.data.swaps
+        //console.log(result.data)
+        
+      })
+  
+      return _data
+  
+    }

@@ -3,8 +3,8 @@
 //wait 
 
 const ethers = require('ethers'); // connect to blockchain 
-const { getAbi, getPoolData, getPoolFromTokens, _getAmountsOut, subgraphGetUniPools, subgraphGetVolatileUniPools, matchingSushiPools, handleProxyTokenContract, getTokenData } = require('./helpers')
-const { buyPoolTokens, uniSwapTrade, uniSwapOptimumTrade, getCurrentPriceUni } = require('./tradehelpers')
+const { getAbi, getPoolData, _getAmountsOut,  handleProxyTokenContract, getTokenData, getRecentSwapData } = require('./helpers')
+const { buyPoolTokens, uniSwapTrade, getCurrentPriceUni } = require('./tradehelpers')
 
 const INFURA_URL = process.env.INFURA_URL
 const provider = new ethers.providers.JsonRpcProvider(INFURA_URL); //init provider
@@ -34,24 +34,24 @@ const main = async() =>{
     console.log(" ")
     console.log("TRADING BOT STARTED")
     console.log("-------------------")
-    //https://www.geckoterminal.com/polygon_pos/pools/ chart link
-    //pooladdress = "0xa9077cdb3d13f45b8b9d87c43e11bce0e73d8631" // Aave/Matic
-    //pooladdress = "0x98b9162161164de1ed182a0dfa08f5fbf0f733ca" // Link/Matic
-    //pooladdress = "0xe6c36eed27c2e8ecb9a233bf12da06c9730b5955" // Naka/Matic 
-    //pooladdress = "0xfe530931da161232ec76a7c3bea7d36cf3811a0d" // DAI/Matic 
-    //pooladdress = "0x7f9121b4f4e040fd066e9dc5c250cf9b4338d5bc" // UNI/Matic - Errors
-    //pooladdress = "0x2a08c38c7e1fa969325e2b64047abb085dec3756" //VOXEL/MATIC
-    //pooladdress = "0xbcbd83ee490ba845a7a5bc14cdfeae52606475d6" //MIM / MATIC - low liquidity
-    //pooladdress = "0xbd69844b26a78565987335904e234c84971e8034" //CAT
-    //pooladdress = "0x09d0a53282c5076b206e2d59b7010d736609f177" //CINE
-    pooladdress = "0x9520dbd4c8803f5c6850742120b471cda0aac954" // PODO
-    //pooladdress = "0xa374094527e1673a86de625aa59517c5de346d32" //USDC
-    //pooladdress = "0xcb518d14589c27297b476892343950b2af041a4f" //Factr
-    //pooladdress = "0xde92e7fbe021344ba02d9225792d219d3a2ddd58" //sand
+    
+    let swaps = await getPositiveIO()
+    console.log(await swaps)
 
+    //GET most recent pool from list of swaps
+    //This is how you find pools to make the youtube video work
+    //Make a single trade but don't swap back
+    //For now this wont make sense but long term when you do a flash swap you can keep the profits.
+
+    console.log(" ")
+    console.log("TRADING BOT STARTED")
+    console.log("-------------------")
+
+    
+    //pooladdress = "0x9520dbd4c8803f5c6850742120b471cda0aac954" // PODO
 
     //NEW POOLS
-
+    /*
     let poolABI = await getAbi(pooladdress)
     let poolData = await getPoolData(pooladdress,poolABI)
     
@@ -64,7 +64,7 @@ const main = async() =>{
     let tokenPaths = [tokenData0.symbol,tokenData1.symbol]
     let tokenDecimals = [tokenData0.decimals,tokenData1.decimals] 
     let slippage = 0.75
-    const BUY_AMOUNT = TRADE_AMOUNT 
+    const BUY_AMOUNT = TRADE_AMOUNT
     //TRADE_AMOUNT + (TRADE_AMOUNT * ((poolData.fee/10000)/100)) + (TRADE_AMOUNT * (slippage/100))
     console.log(BUY_AMOUNT)
 
@@ -83,8 +83,7 @@ const main = async() =>{
     console.log(" ")
     console.log("INITAL TRADE STARTED")
     console.log("-------------------")
-    let swapData = await uniSwapOptimumTrade(BUY_AMOUNT, pooladdress, tokenIDs, tokenPaths, tokenDecimals)
-    console.log(swapData)
+    let swapData = await uniSwapTrade(BUY_AMOUNT, pooladdress, tokenIDs, tokenPaths, tokenDecimals)
     let tokens1Bought = swapData.amount1
         console.log(`boughtPrice: ${boughtPrice}`)
         console.log(`tokens1Bought ${tokens1Bought}`)
@@ -94,16 +93,14 @@ const main = async() =>{
     let updatedPrice
     
    
-    let price_diff_perc_test = 0
+    
     let priceMonitor = setInterval(async () => { 
         console.log(" ")
         console.log("PRICE POLLING RUNNING")
         console.log("-------------------")
         let price_diff_perc 
-        
+        let price_diff_perc_test = 0
         var currentdate = new Date();
-        price_diff_perc_test++
-        console.log(price_diff_perc_test)
         //worth using try catch here
         //if an error ouput 0 then set price difference to error and continue
         try{
@@ -111,7 +108,6 @@ const main = async() =>{
             console.log(`boughtPrice: ${boughtPrice}`)
             console.log(`updatedPrice: ${updatedPrice}`)
             console.log(`price difference: ${updatedPrice-boughtPrice}`)
-           
         
             console.log(currentdate)
             price_diff_perc = ((updatedPrice - boughtPrice)/ boughtPrice)*100
@@ -132,7 +128,7 @@ const main = async() =>{
         }
         
        
-        
+        //price_diff_perc_test++
             
             
         
@@ -140,22 +136,17 @@ const main = async() =>{
             //if price increases above 2% long term we will use 5% 
             //stop the interval 
             console.log(" ")
-            console.log("PRICE POLLING STOPPED")
-            console.log("-------------------")
-            clearInterval(priceMonitor)
-
-            console.log(" ")
             console.log("REVERT TRADE STARTED")
             console.log("-------------------")
-            let swapData = await uniSwapOptimumTrade(tokens1Bought, pooladdress, tokenIDs.reverse(), tokenPaths.reverse(), tokenDecimals.reverse())
-            
+            let swapData = await uniSwapTrade(tokens1Bought, pooladdress, tokenIDs.reverse(), tokenPaths.reverse(), tokenDecimals.reverse())
+    
             console.log(swapData)
             console.log(`started: ${BUY_AMOUNT}, ended: ${swapData.amount1},  profit: ${ swapData.amount1 - BUY_AMOUNT} `)
             console.log("UPLOAD trade data to csv")
             
             //trade data: input, output, profit, time,
             //eventually will change up to up date trade data
-            
+            clearInterval(priceMonitor)
             
         }
        
@@ -164,7 +155,7 @@ const main = async() =>{
 
     
 
-
+    */
 
 
     
@@ -189,8 +180,38 @@ const getTokenContract = async(address) =>{
       //if proxy contract handle as proxy
 }
 
+const getCurrentPrice = async(pooladdress, poolABI,tokenIDs, tokenDecimals, tokenPaths) => {
+    
+    const AMOUNT = 1
+    let _tickData = await getPoolData(pooladdress,poolABI)
+    let tick = _tickData.slot0.tick
+   
+    
+    let currentPrice = await _getAmountsOut(AMOUNT,tokenIDs, tick, tokenDecimals)
+    //console.log(tick)
+    //console.log(currentPrice)
+    console.log(`${AMOUNT} ${tokenPaths[0]} can be swapped for ${currentPrice} ${tokenPaths[1]}`)
+    return(currentPrice)
+}
 
+const getPositiveIO = async() =>{
+    let recentSwapData = await getRecentSwapData()
+    //console.log(recentSwapData)
+    let swaps = []
 
+    for (let swap in recentSwapData){
+        console.log(false)
+        if(recentSwapData[swap].amountOutUSD !=0 && recentSwapData[swap].amountInUSD !=0 &&  recentSwapData[swap].amountOutUSD > recentSwapData[swap].amountInUSD){
+            swaps.push(recentSwapData[swap])
+            console.log(true)
+
+        }
+
+    }
+
+    return swaps
+
+}
 
 main()
 
