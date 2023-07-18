@@ -1,6 +1,6 @@
 const ethers = require('ethers'); // connect to blockchain 
 const { getAbi, getPoolData, getPoolFromTokens, _getAmountsOut, subgraphGetUniPools, subgraphGetVolatileUniPools, matchingSushiPools } = require('./helpers')
-const { buyPoolTokens, uniSwapBasicTrade, sushiSwapBasicTrade } = require('./tradehelpers')
+const { buyPoolTokens, uniSwapBasicTrade, sushiSwapBasicTrade } = require('./_tradehelpers')
 
 const INFURA_URL = process.env.INFURA_URL
 const provider = new ethers.providers.JsonRpcProvider(INFURA_URL); //init provider

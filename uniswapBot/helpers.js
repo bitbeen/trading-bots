@@ -447,6 +447,14 @@ await axios.post(URL, {query: query})
         amountOutUSD
         id
         timestamp
+        tokenIn {
+          id
+          symbol
+        }
+        tokenOut {
+          id
+          symbol
+        }
         pool {
           name
           id

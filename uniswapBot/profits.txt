@@ -1,0 +1,111 @@
+ 3.8177
+MATIC
+$2.84
+USD
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 0.076927 BOB was swapped for 0.102291 WMATIC Symbol on Uniswap V3
+
+NEXT PRICE POLL
+-------------------
+
+POLLING STOPPED COMPLETE
+-------------------
+started: 0.1,
+                            ended: 0.102291,
+                            profit: 0.0022910000000000014,
+                            total gas cost 0.06245125258746371,
+                            profit after gas -0.06016025258746371
+
+TRADE COMPLETE
+-------------------
+
+0.076016 MIM was swapped for 0.102077 WMATIC Symbol on Uniswap V3
+
+NEXT PRICE POLL
+-------------------
+
+POLLING STOPPED COMPLETE
+-------------------
+started: 0.1,
+                            ended: 0.102077,
+                            profit: 0.0020769999999999955,
+                            total gas cost 0.060817190637991556,
+                            profit after gas -0.05874019063799156
+
+
+0.07687686082687922 DAI was swapped for 0.102013816379037005 WMATIC Symbol on Uniswap V3
+
+NEXT PRICE POLL
+-------------------
+
+POLLING STOPPED COMPLETE
+-------------------
+started: 0.1,
+                            ended: 0.102013816379037,
+                            profit: 0.002013816379036998, 
+                            total gas cost 0.06213155750563251,
+                            profit after gas -0.060117741126595514
+
+TRADE COMPLETE
+-------------------
+
+
+ 0.01113 LINK was swapped for 0.102060 WMATIC Symbol on Uniswap V3
+
+NEXT PRICE POLL
+-------------------
+
+POLLING STOPPED COMPLETE
+-------------------
+started: 0.1,
+                            ended: 0.10206,
+                            profit: 0.0020599999999999924, 
+                            total gas cost 0.057382396766664845,
+                            profit after gas -0.05532239676666485
+
+TRADE COMPLETE
+-------------------
+
+0.07688 USDC was swapped for 0.102042 WMATIC Symbol on Uniswap V3
+
+POLLING STOPPED COMPLETE
+-------------------
+started: 0.1,
+                            ended: 0.102042,
+                            profit: 0.0020419999999999883, 
+                            total gas cost 0.07433891685213928,
+                            profit after gas -0.07229691685213929
+
+TRADE COMPLETE
+-------------------
+
+0.001034312363293808 AAVE was swapped for 0.108910715014911104 WMATIC Symbol on Uniswap V3
+
+NEXT PRICE POLL
+-------------------
+
+POLLING STOPPED COMPLETE
+-------------------
+started: 0.1,
+                            ended: 0.1089107150149111, 
+                            profit: 0.0089107150149111,
+                            total gas cost 0.0646812623598984,
+                            profit after gas -0.055770547344987306
+
+TRADE COMPLETE
+-------------------
+
+Bigger tokens give higher profits 
