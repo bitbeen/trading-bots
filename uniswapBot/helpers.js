@@ -188,7 +188,7 @@ exports.handleProxyTokenContract = async (tokenAddress, tokenAbi) =>{
     )
   
     const implementationTokenAddress = await tokenContract.implementation()
-    console.log("implementation contract:" + implementationTokenAddress )
+  
   
     //get implementation contract abi
     const implementationTokenAbi = await getAbi(implementationTokenAddress)

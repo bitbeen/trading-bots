@@ -21,6 +21,7 @@
   "devDependencies": {
     "@uniswap/sdk": "^3.0.3",
     "@uniswap/smart-order-router": "^3.13.2-hotfix2",
-    "abi-decoder": "^2.4.0"
+    "abi-decoder": "^2.4.0",
+    "csv-write-stream": "^2.0.0"
   }
 }

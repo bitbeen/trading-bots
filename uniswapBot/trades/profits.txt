@@ -1,19 +1,62 @@
- 3.8177
-MATIC
-$2.84
-USD
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
+
+19/07/2023
+REVERT STARTED
+
+
+POLLING STOPPED COMPLETE
+-------------------
+started: 2,
+                            ended: 2.041432,
+                            profit: 0.04143199999999991,
+                            total gas cost 0.0906424464026642,
+                            profit after gas -0.04921044640266428
+
+TRADE COMPLETE
+-------------------
+
+swap completed
+ 0.021213 COMP was swapped for 2.129593 WMATIC Symbol on Uniswap V3
+
+NEXT PRICE POLL
+-------------------
+
+POLLING STOPPED COMPLETE
+-------------------
+started: 2,
+                            ended: 2.129593,
+                            profit: 0.12959299999999985,
+                            total gas cost 0.10276146093768634,
+                            profit after gas 0.026831539062313503
+
+TRADE COMPLETE
+-------------------
+
+-------------------
+gas price 138
+transaction hash 0x14bd557af405f8a13c0c0c0c83fbfa50a83b68932c880759bff1e02f7fe7aba2
+network block skew detected; skipping block events (emitted=45235046 blockNumber45238532)
+transaction reciept
+swap completed
+ 1.537447 MIM was swapped for 2.040008 WMATIC Symbol on Uniswap V3
+
+NEXT PRICE POLL
+-------------------
+
+POLLING STOPPED COMPLETE
+-------------------
+started: 2,
+                            ended: 2.040008,
+                            profit: 0.04000799999999982,
+                            total gas cost 0.0915642573739136,
+                            profit after gas -0.05155625737391378
+
+TRADE COMPLETE
+-------------------
+
+D:\Code\8-trading-bots\trading-bots\uniswapBot>
+
+-------------------------------
+18/07/2023
  
  
  0.076927 BOB was swapped for 0.102291 WMATIC Symbol on Uniswap V3
@@ -109,3 +152,5 @@ TRADE COMPLETE
 -------------------
 
 Bigger tokens give higher profits 
+
+

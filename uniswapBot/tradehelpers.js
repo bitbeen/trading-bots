@@ -228,7 +228,7 @@ exports.arbPollingTrade = async (amountIn, poolAddress, tokenIDs, tokenPath, tok
 
       */
   price_diff = parseFloat(amountOut)-parseFloat(amountIn)
-  spread = 0.02 //based on amount in to get 0.02 (for testing just use but once testing with 1s use 0.02 or inverse or average gas?)
+  spread = 0.03 //based on amount in to get 0.02 (for testing just use but once testing with 1s use 0.02 or inverse or average gas?)
   
 
   if(price_diff>spread){
