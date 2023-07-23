@@ -1,83 +1,57 @@
+//convert results to match historical data
+//get hourly data from the last 2days
+
 const axios = require('axios')
 
-let pool = "0xa9077cdb3d13f45b8b9d87c43e11bce0e73d8631"
+let pool = "0x495b3576e2f67fa870e14d0996433fbdb4015794"
 
 const main = async() =>{
-
-    let days = 7
-    let last7Days = await get_recent_days(pool)
-    let sum7Days = 0
-    
-
-    /*LAST 7 DAYS */
-    console.log("last 7 days list")
-    for (result in last7Days){
-        var date = new Date(last7Days[result][0]*1000)
-        var close = last7Days[result][4]
-        console.log(date)
-        console.log(close)
-        sum7Days = sum7Days + close
-   
-
-
-    }
-
-    let average7Days = sum7Days / last7Days.length
-
-   
-    
-   
-
-    let last6Hours = await get_recent_hours(pool)
-    let sum6Hours = 0
-    
-
-    /*LAST 7 DAYS */
-    console.log("last 6 hours list")
-    for (result in last6Hours){
-        var date = new Date(last6Hours[result][0]*1000)
-        var close = last6Hours[result][4]
-        console.log(date)
-        console.log(close)
-        sum6Hours = sum6Hours + close
-   
-
-
-    }
-    let average6Hours = sum6Hours/ last6Hours.length
-
-    let last10Days = await last10DaysByHour(pool)
-    let sum10Days = 0
-    let closes = []
-    for (result in last10Days){
-        //var date = new Date(last6Hours[result][0]*1000)
-        var close = last10Days[result][4]
-        //console.log(close)
-        sum10Days = sum10Days + close
-        closes.push(close)
-   
-
-
-    }
-    
-    let average10Days = sum10Days/ last10Days.length
-    
-    
-
-    let minute = await this_minute(pool)
-    var date = new Date(minute[0][0]*1000)
-    var close = minute[0][4]
-    
-    console.log("7 day average",average7Days)
-    console.log("6 hour average",average6Hours)
-    console.log("last 10 days", average10Days)
-    console.log("max 10 days", Math.max(...closes))
-    console.log("max 10 days % diff", ( ( Math.max(...closes) - average10Days )/average10Days) * 100)
-    console.log("min 10 days", Math.min(...closes))
-    console.log("min 10 days % diff", ((average10Days - Math.min(...closes)) )/Math.min(...closes) * 100)
-    console.log("current price",close)
+    // Call the function with a smoothing factor (0.2 is a common choice) and log the predicted potential price change
+const smoothingFactor = 0.2;
+const predictedChange = predictPriceChangeEMA(historicalData, smoothingFactor);
+console.log(`Predicted potential price change in the next 1 hour: ${predictedChange}`);
+ 
    
 }
+
+function calculateEMA(data, smoothingFactor) {
+    let ema = data[0].close;
+    for (let i = 1; i < data.length; i++) {
+      ema = data[i].close * smoothingFactor + ema * (1 - smoothingFactor);
+    }
+    return ema;
+  }
+  
+// Function to predict potential price change in the next 1 hour using EMA
+function predictPriceChangeEMA(historicalData, smoothingFactor) {
+// Convert time strings to Date objects for time calculations
+const parsedData = historicalData.map(item => ({
+    ...item,
+    time: new Date(item.time)
+}));
+
+// Calculate the time difference in milliseconds between data points
+const timeInterval = parsedData[1].time - parsedData[0].time;
+
+// Calculate the EMA for the historical data
+const ema = calculateEMA(parsedData, smoothingFactor);
+
+// Predict the potential price change in the next 1 hour (3600000 milliseconds)
+const predictedPriceChange = ema * 3600000;
+
+return predictedPriceChange;
+}
+
+/*
+const historicalData = [
+    { time: "2023-07-15 00:00:00", close: 100 },
+    { time: "2023-07-15 01:00:00", close: 110 },
+    { time: "2023-07-15 02:00:00", close: 120 },
+    // ... Add more historical data ...
+  ];*/
+
+
+
 
 
 const get = async(pool) =>{
@@ -148,19 +122,6 @@ const get_recent_hours = async() =>{
         return data
 }
 
-/*
-const post = async() =>{
 
-    URL = ""
-    let data
-    await axios.post(URL, {query: query})
-        .then((result) =>{
-            
-            data= result
-            
-            
-        })
-        return data
-}*/
 
 main()

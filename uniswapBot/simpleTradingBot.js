@@ -26,13 +26,13 @@ const provider = new ethers.providers.JsonRpcProvider(INFURA_URL); //init provid
 
 const main = async() =>{
     //get and print data about the trading pool
-    const INCREASE_VALUE = 5 //tx 0.1% max
+    const INCREASE_VALUE = 1 //tx 0.1% max
     //const TRADE_AMOUNT = 2
     console.log(" ")
     console.log("TRADING BOT STARTED")
     console.log("-------------------")
     //https://www.geckoterminal.com/polygon_pos/pools/ chart link
-    pooladdress = "0xa9077cdb3d13f45b8b9d87c43e11bce0e73d8631" // Aave/Matic - make sure you find lowest point in day
+    //pooladdress = "0xa9077cdb3d13f45b8b9d87c43e11bce0e73d8631" // Aave/Matic - make sure you find lowest point in day
     //pooladdress = "0x98b9162161164de1ed182a0dfa08f5fbf0f733ca" // Link/Matic
     //pooladdress = "0xe6c36eed27c2e8ecb9a233bf12da06c9730b5955" // Naka/Matic - almost always down (lowest point of week with upturn?)
     //pooladdress = "0xfe530931da161232ec76a7c3bea7d36cf3811a0d" // DAI/Matic 
@@ -46,7 +46,7 @@ const main = async() =>{
     //pooladdress = "0xcb518d14589c27297b476892343950b2af041a4f" //Factr
     //pooladdress = "0xde92e7fbe021344ba02d9225792d219d3a2ddd58" //sand
     //pooladdress = "0xd90d522211f7a887fd833ececed83a3019e0fc6c" //BOB
-    //pooladdress = "0x86f1d8390222a3691c28938ec7404a1661e618e0" //WETH
+    pooladdress = "0x167384319b41f7094e62f7506409eb38079abff8" //WETH
     //pooladdress ="0x495b3576e2f67fa870e14d0996433fbdb4015794" //COMP
     
     
@@ -67,7 +67,7 @@ const main = async() =>{
     let tokenPaths = [tokenData0.symbol,tokenData1.symbol]
     let tokenDecimals = [tokenData0.decimals,tokenData1.decimals] 
     let slippage = 0.75
-    const BUY_AMOUNT = 4
+    const BUY_AMOUNT = 10
     console.log(" ")
     console.log("INITITAL TRADE STARTED")
     console.log("-------------------")
@@ -105,7 +105,7 @@ const main = async() =>{
         console.log("-------------------")
         let pollingres
         try{
-            pollingres = await pollingTrade(swapData.amount1, pooladdress, tokenIDsR, tokenPathsR, tokenDecimalsR, BUY_AMOUNT)
+            pollingres = await pollingTrade(swapData.amount1, pooladdress, tokenIDsR, tokenPathsR, tokenDecimalsR, BUY_AMOUNT,INCREASE_VALUE)
             console.log(" ")
             console.log("NEXT PRICE POLL")
             console.log("-------------------")

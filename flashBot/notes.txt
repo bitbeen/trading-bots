@@ -1,0 +1,21 @@
+.env
+- run a new wallet with £10 to start.
+- Review old projects for connecting signer to ENV
+
+
+#The pool set up in testing is where the arbitrage oppurtinities arbitrage
+#Arbitraging same token across different fee pools
+- best to do with trade that going to profit too (eg amount out higher than amount in)
+
+1. In the test swap ratio is built however this can be determined from amount in and out.
+500     = 1:1 1,1 10,10
+3000    = 1:2 1,2 10,20
+10000   = 2:1 1,0.5 10,5
+
+#borrow from the first pool (1:1)
+#input token1 into second pool (1:2) this gets us the first token at a positive trade
+#input token0 into third pool this gets us the second token at a positive trade
+##where ever the fee is higher trade back in.
+##this only works if 1 pool is close to average, 1 pool is close to one direction and one pool is close to the other?
+
+#once the trade are complete we pay back the tokens left over and this gives us the tokens from the first pool 

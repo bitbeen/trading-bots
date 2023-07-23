@@ -224,10 +224,31 @@ exports.initQuote = async(amountIn, poolAddress, tokenIDs, tokenPaths, tokenDeci
     let quoteData
     let initQuoteResult
     let tradeData //out of a swap also return object that saves data out side the poll and helps with exit
-   
+    let router
     //let initTradeResult
-    const router = new AlphaRouter({ chainId: chainId, provider: provider}) //router object
+      //this is where the try catch goes. 
+  //if catch fails just output null data and set status to false
+    try{
+         router = new AlphaRouter({ chainId: chainId, provider: provider}) //router object
+    }catch{
+        quoteData = {
+       
+            symbol0:symbol0,
+            symbol1:symbol1,
+            amount0:parseFloat(amountIn),
+            amount1:parseFloat(amountOut),
+            message:"router not available",
+            pair:pair,
+            status:false,
+            process:0,
+           
+            
+            
+    
+        }
 
+    }
+    
 
 
     initQuoteResult = await getQuote(usdc_mim,router,amountIn)
@@ -252,11 +273,30 @@ exports.revertQuote = async(amountIn, poolAddress, tokenIDs, tokenPaths, tokenDe
     let quoteData
     
     let tradeData //out of a swap also return object that saves data out side the poll and helps with exit
-   
+    let router
     //let initTradeResult
-    const router = new AlphaRouter({ chainId: chainId, provider: provider}) //router object
+      //this is where the try catch goes. 
+  //if catch fails just output null data and set status to false
+    try{
+        router = new AlphaRouter({ chainId: chainId, provider: provider}) //router object
+    }catch{
+        quoteData = {
+    
+            symbol0:symbol0,
+            symbol1:symbol1,
+            amount0:parseFloat(amountIn),
+            amount1:parseFloat(amountOut),
+            message:"router not available",
+            pair:pair,
+            status:false,
+            process:0,
+        
+            
+            
 
-    console.log("debug 1")
+        }
+
+    }
   
     //initQuoteResult = await getQuote(usdc_mim,router,amountIn)
 

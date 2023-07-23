@@ -335,11 +335,40 @@ exports.arbPollingTrade = async (amountIn, poolAddress, tokenIDs, tokenPath, tok
 }
 
 
-exports.pollingTrade = async (amountIn, poolAddress, tokenIDs, tokenPath, tokenDecimals, initialAmount) => {
-  let increaseAmount = initialAmount +(initialAmount* 2/100)  //2 is the increase
+exports.pollingTrade = async (amountIn, poolAddress, tokenIDs, tokenPath, tokenDecimals, initialAmount,INCREASE_VALUE) => {
+  let increaseAmount = initialAmount + (initialAmount* INCREASE_VALUE/100)  //2 is the increase
+  console.log("increase amount",increaseAmount)
   const chainId = 137
-  const router = new AlphaRouter({ chainId: chainId, provider: provider})
 
+  //this is where the try catch goes. 
+  //if catch fails just output null data and set status to false
+  let router
+  let swapData
+    //let initTradeResult
+      //this is where the try catch goes. 
+  //if catch fails just output null data and set status to false
+    try{
+         router = new AlphaRouter({ chainId: chainId, provider: provider}) //router object
+    }catch{
+      swapData = {
+       
+            token0:address0,
+            token1:address1,
+            symbol0:symbol0,
+            symbol1:symbol1,
+            amount0:0,
+            amount1:0,
+            tx1Cost:0,
+            tx2Cost:0,
+            status:false,
+           
+           
+            
+            
+    
+        }
+
+    }
   
   const symbol0 = tokenPath[0]
   const decimals0 = tokenDecimals[0] //https://ethereum.stackexchange.com/questions/133589/uniswap-v2-getamountsout-and-towei-fromwei
@@ -353,7 +382,7 @@ exports.pollingTrade = async (amountIn, poolAddress, tokenIDs, tokenPath, tokenD
 
   const WETH = new Token(chainId, address0, decimals0)
   let UNI = new Token(chainId, address1, decimals1)
-  let swapData
+  
 
   const wei = ethers.utils.parseUnits(amountIn.toString(), decimals0) //it could be that we need to convert it to decimal 1? !!! 18
   const inputAmount = CurrencyAmount.fromRawAmount(WETH, JSBI.BigInt(wei)) //!!! WETH

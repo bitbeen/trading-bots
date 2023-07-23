@@ -33,8 +33,8 @@ const main = async() =>{
  
 
 
-    //pooladdress ="0x99799d0e96d4e436f4b8d2e125f0b1ce8e1770a7" //USDC/MIM 0.3% - worth looking into bot that trades out of at decent peak
-    pooladdress ="0x0a63d3910ffc1529190e80e10855c4216407cc45" //BOB
+    //pooladdress ="0x99799d0e96d4e436f4b8d2e125f0b1ce8e1770a7" //USDC/MIM 0.3% - the shift daily rather than hourly
+    pooladdress ="0x254aa3a898071d6a2da0db11da73b02b4646078f" //USDT/DAI - daily smaller swings £20 test
   
 
 
@@ -75,10 +75,10 @@ const main = async() =>{
     }
 
   
-    let spread = 0 //TEST
+    let spread = 0.03 //TEST
     let slippage = 0.75
     let maticPrice = 0.75
-    const BUY_AMOUNT = 1 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    const BUY_AMOUNT = 20 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     console.log(" ")
     console.log("INIT POLLING STARTED")
     console.log("-------------------")
@@ -314,7 +314,7 @@ let revertPolling = setInterval(async () => {
                 console.log("-------------------")
                 
             }else{ */
-            if(price_diff>0){
+            if(price_diff>spread){
                 tradeState.process = 4 //set process step to one after you make a trade
                 tradeState.status = true
                 console.log(" ")
@@ -322,7 +322,7 @@ let revertPolling = setInterval(async () => {
                 console.log("-------------------")
         
 
-            }else if(tradeState.amount0>10){
+            }else if(tradeState.amount0>10000){
                 tradeState.process = 4 //set process step to one after you make a trade
                 tradeState.status = false
                 console.log(" ")
