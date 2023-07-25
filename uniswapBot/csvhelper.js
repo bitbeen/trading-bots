@@ -77,3 +77,16 @@ writer.end();
 
 
 }
+
+exports.geckoTestExport = async (filename,data) => {
+    
+
+    //Start Date,End Date,Amount In,Amount Out,Profit,Total Gas Cost,Profit After Gas
+    writer = csvWriter({sendHeaders: Object.keys(data)});
+    writer.pipe(fs.createWriteStream(filename, {flags: 'a'}));
+    writer.write(data);
+writer.end();
+
+
+
+}

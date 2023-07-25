@@ -1,4 +1,14 @@
+SCALP TRADER
+- Leave inverse bot till later
+- Run the geckbot if the potential new price is above 50% run the TRADER
+- Close it after 1 hr and compare
+- If all gecko tests pass this should profit
+
+
+
 ARBITRAGE TRADER
+
+- Needs  £200
 
 Next steps
 - Filter only the most recent pools from the pool finder

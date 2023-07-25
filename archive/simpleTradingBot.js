@@ -1,10 +1,10 @@
 
 
 const ethers = require('ethers'); // connect to blockchain 
-const { getAbi, getPoolData, getTokenData } = require('./helpers')
+const { getAbi, getPoolData, getTokenData } = require('../uniswapBot/helpers')
 
-const { initialTrade, pollingTrade } = require('./tradehelpers')
-const { csvOutPut, csvOutPutClosed, csvOutPutOpen } = require('./csvhelper')
+const { initialTrade, pollingTrade } = require('../uniswapBot/tradehelpers')
+const { csvOutPut, csvOutPutClosed, csvOutPutOpen } = require('../uniswapBot/csvhelper')
 
 
 const INFURA_URL = process.env.INFURA_URL
@@ -26,30 +26,30 @@ const provider = new ethers.providers.JsonRpcProvider(INFURA_URL); //init provid
 
 const main = async() =>{
     //get and print data about the trading pool
-    const INCREASE_VALUE = 1 //tx 0.1% max
+    const INCREASE_VALUE = 0.5 //tx 0.1% max
     //const TRADE_AMOUNT = 2
     console.log(" ")
     console.log("TRADING BOT STARTED")
     console.log("-------------------")
     //https://www.geckoterminal.com/polygon_pos/pools/ chart link
     //pooladdress = "0xa9077cdb3d13f45b8b9d87c43e11bce0e73d8631" // Aave/Matic - make sure you find lowest point in day
-    //pooladdress = "0x98b9162161164de1ed182a0dfa08f5fbf0f733ca" // Link/Matic
+    pooladdress = "0x98b9162161164de1ed182a0dfa08f5fbf0f733ca" // Link/Matic
     //pooladdress = "0xe6c36eed27c2e8ecb9a233bf12da06c9730b5955" // Naka/Matic - almost always down (lowest point of week with upturn?)
     //pooladdress = "0xfe530931da161232ec76a7c3bea7d36cf3811a0d" // DAI/Matic 
     //pooladdress = "0x7f9121b4f4e040fd066e9dc5c250cf9b4338d5bc" // UNI/Matic - make sure to find lowest point in day
     //pooladdress = "0x2a08c38c7e1fa969325e2b64047abb085dec3756" //VOXEL/MATIC - get a daily average
     //pooladdress = "0xbcbd83ee490ba845a7a5bc14cdfeae52606475d6" //MIM / MATIC - hella volatile but low liquidity
-    //pooladdress = "0xbd69844b26a78565987335904e234c84971e8034" //CAT
+    //pooladdress = "0xbd69844b26a78565987335904e234c84971e8034" //CAT * lo
     //pooladdress = "0x09d0a53282c5076b206e2d59b7010d736609f177" //CINE
-    //pooladdress = "0x9520dbd4c8803f5c6850742120b471cda0aac954" // PODO
+    //pooladdress = "0x9520dbd4c8803f5c6850742120b471cda0aac954" // PODO *
     //pooladdress = "0xa374094527e1673a86de625aa59517c5de346d32" //USDC
     //pooladdress = "0xcb518d14589c27297b476892343950b2af041a4f" //Factr
-    //pooladdress = "0xde92e7fbe021344ba02d9225792d219d3a2ddd58" //sand
+    //pooladdress = "0xde92e7fbe021344ba02d9225792d219d3a2ddd58" //sand *
     //pooladdress = "0xd90d522211f7a887fd833ececed83a3019e0fc6c" //BOB
-    pooladdress = "0x167384319b41f7094e62f7506409eb38079abff8" //WETH
+    //pooladdress = "0x167384319b41f7094e62f7506409eb38079abff8" //WETH
     //pooladdress ="0x495b3576e2f67fa870e14d0996433fbdb4015794" //COMP
     
-    
+    //pooladdress ="0x31c832486573e25fe3c4f03d9c2c28c4a48e9d6f" //GRT
 
 
 
@@ -67,7 +67,7 @@ const main = async() =>{
     let tokenPaths = [tokenData0.symbol,tokenData1.symbol]
     let tokenDecimals = [tokenData0.decimals,tokenData1.decimals] 
     let slippage = 0.75
-    const BUY_AMOUNT = 10
+    const BUY_AMOUNT = 50
     console.log(" ")
     console.log("INITITAL TRADE STARTED")
     console.log("-------------------")
@@ -105,7 +105,8 @@ const main = async() =>{
         console.log("-------------------")
         let pollingres
         try{
-            pollingres = await pollingTrade(swapData.amount1, pooladdress, tokenIDsR, tokenPathsR, tokenDecimalsR, BUY_AMOUNT,INCREASE_VALUE)
+            pollingres = await pollingT
+            rade(swapData.amount1, pooladdress, tokenIDsR, tokenPathsR, tokenDecimalsR, BUY_AMOUNT,INCREASE_VALUE)
             console.log(" ")
             console.log("NEXT PRICE POLL")
             console.log("-------------------")

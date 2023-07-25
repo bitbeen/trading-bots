@@ -1,5 +1,3 @@
-//convert results to match historical data
-//get hourly data from the last 2days
 
 const axios = require('axios')
 
@@ -13,7 +11,7 @@ const main = async() =>{
     
     
     var data = await last60Minutes(pool).then(async data =>{
-        console.log(data)
+       
         data = data.reverse()
         for (d in data){
             let historicalData = {
@@ -40,11 +38,24 @@ const main = async() =>{
 
     })
     //const transactionReceipt = await provider.waitForTransaction(transaction.hash).then(
-    console.log(`Predicted potential price change% in the next 10 minutes hour: ${round(result.predictedChange)}`);
+    console.log(`Predicted potential price change in the next 1 hour: ${round(result.predictedChange)}`);
     console.log(`Predicted potential price change% in the next 1 hour: ${round(result.predictedChangePercentage)}%`);
     console.log(`Original price: ${round(result.originalPrice)}`);
     console.log(`Potential new price: ${round(result.originalPrice + result.predictedChange)}`)
-    console.log(`Run at: ${time}`);
+    console.log(`Run at: ${new Date()}`);
+
+
+    await delay(3600000); //3600000
+    let _data = await this_minute(pool).then(async _data =>{
+        newPrice = _data[0][4]
+    })
+    time = new Date()
+    console.log(`Actual new price: ${round(newPrice)}`)
+    console.log(`Actual price change: ${round(newPrice - result.originalPrice)}`)
+    console.log(`Actual price% change: ${round((newPrice - result.originalPrice)/result.originalPrice*100)}%`)
+    console.log(`Run at: ${new Date()}`);
+
+    
 
     
 
@@ -57,7 +68,7 @@ const main = async() =>{
 
 const runEMACalc = async(historicalData) =>{
     // Call the function with a smoothing factor (0.2 is a common choice) and log the predicted potential price change
-const smoothingFactor = 0.27;
+const smoothingFactor = 0.25;
 const predictedChangeData = predictPriceChangeWithinHour(historicalData, smoothingFactor);
 
  return predictedChangeData
@@ -103,49 +114,13 @@ function calculateEMA(data, smoothingFactor) {
   }
 
 
-function _calculateEMA(data, smoothingFactor) {
-    let ema = data[0].close;
-    console.log(ema)
-    for (let i = 1; i < data.length; i++) {
-      ema = data[i].close * smoothingFactor + ema * (1 - smoothingFactor);
-    }
-    return ema;
-  }
-  
-// Function to predict potential price change in the next 1 hour using EMA
-function predictPriceChangeEMA(historicalData, smoothingFactor) {
-// Convert time strings to Date objects for time calculations
-const parsedData = historicalData.map(item => ({
-    ...item,
-    time: new Date(item.time)
-}));
-
-// Calculate the time difference in milliseconds between data points
-const timeInterval = parsedData[1].time - parsedData[0].time;
-
-// Calculate the EMA for the historical data
-const ema = calculateEMA(parsedData, smoothingFactor);
-
-// Predict the potential price change in the next 1 hour (3600000 milliseconds)
-const predictedPriceChange = ema * 3600000;
-
-return predictedPriceChange;
-}
-
-/*
-const historicalData = [
-    { time: "2023-07-15 00:00:00", close: 100 },
-    { time: "2023-07-15 01:00:00", close: 110 },
-    { time: "2023-07-15 02:00:00", close: 120 },
-    // ... Add more historical data ...
-  ];*/
 
 
 
+  const delay = ms => new Promise(res => setTimeout(res, ms));
 
-
-const get = async(pool) =>{
-    let url = `https://api.geckoterminal.com/api/v2/networks/polygon_pos/pools/${pool}/ohlcv/day`
+const this_minute = async(pool) =>{
+    let url = `https://api.geckoterminal.com/api/v2/networks/polygon_pos/pools//${pool}/ohlcv/minute?limit=1`
     let data 
     await axios.get(url)
         .then((result) =>{
@@ -158,60 +133,9 @@ const get = async(pool) =>{
 }
 
 
-const get_recent_days = async(pool) =>{
-    let url = `https://api.geckoterminal.com/api/v2/networks/polygon_pos/pools/${pool}/ohlcv/day?limit=7`
-    let data 
-    await axios.get(url)
-        .then((result) =>{
-            
-            data = result.data.data.attributes.ohlcv_list
-            
-            
-        })
-        return data
-}
-
-const this_minute = async() =>{
-    let url = `https://api.geckoterminal.com/api/v2/networks/polygon_pos/pools//${pool}/ohlcv/minute?limit=5`
-    let data 
-    await axios.get(url)
-        .then((result) =>{
-            
-            data = result.data.data.attributes.ohlcv_list
-            
-            
-        })
-        return data
-}
 
 
-const last10DaysByHour = async() =>{
-    let url = `https://api.geckoterminal.com/api/v2/networks/polygon_pos/pools//${pool}/ohlcv/hour?aggregate=1&limit=240`
-    let data 
-    await axios.get(url)
-        .then((result) =>{
-            
-            data = result.data.data.attributes.ohlcv_list
-            
-            
-        })
-        return data
-}
 
-const last2DaysByHour = async() =>{
-    let url = `https://api.geckoterminal.com/api/v2/networks/polygon_pos/pools//${pool}/ohlcv/hour?aggregate=1&limit=48`
-    let data 
-    await axios.get(url)
-        .then((result) =>{
-            
-            data = result.data.data.attributes.ohlcv_list
-            
-            
-        })
-        return data
-
-        //48*12 = 756 can be accurate up to 5 minutes if needed
-}
 
 const last60Minutes = async() =>{
     let url = `https://api.geckoterminal.com/api/v2/networks/polygon_pos/pools//${pool}/ohlcv/minute?aggregate=1&limit=60`
