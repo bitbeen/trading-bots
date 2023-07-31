@@ -1,0 +1,14 @@
+oPrice,run1,pNPrice,pChange,pChangePercentage,run2,aNPrice,aChange,aChangePercentage,makeTrade,tradetestResult
+71.91,Thu Jul 27 2023 20:55:50 GMT+0100 (British Summer Time),72.48,0.57,0.79,Thu Jul 27 2023 21:55:50 GMT+0100 (British Summer Time),71.45,-0.46,-0.64,true,Something wrong
+oPrice,run1,pNPrice,pChange,pChangePercentage,run2,aNPrice,aChange,aChangePercentage,makeTrade,tradetestResult
+72.23,Thu Jul 27 2023 22:58:13 GMT+0100 (British Summer Time),72.69,0.46,0.63,Thu Jul 27 2023 23:58:14 GMT+0100 (British Summer Time),72.36,0.13,0.18,true,Something wrong
+oPrice,run1,pNPrice,pChange,pChangePercentage,run2,aNPrice,aChange,aChangePercentage,makeTrade,tradetestResult
+72.94,Fri Jul 28 2023 02:28:15 GMT+0100 (British Summer Time),72.13,-0.80,-1.10,Fri Jul 28 2023 03:28:15 GMT+0100 (British Summer Time),72.94,0.00,0.00,false,No trade
+oPrice,run1,pNPrice,pChange,pChangePercentage,run2,aNPrice,aChange,aChangePercentage,makeTrade,tradetestResult
+72.94,Fri Jul 28 2023 04:28:15 GMT+0100 (British Summer Time),72.82,-0.12,-0.16,Fri Jul 28 2023 05:28:15 GMT+0100 (British Summer Time),73.42,0.48,0.66,false,No trade
+oPrice,run1,pNPrice,pChange,pChangePercentage,run2,aNPrice,aChange,aChangePercentage,makeTrade,tradetestResult
+72.79,Fri Jul 28 2023 06:28:15 GMT+0100 (British Summer Time),72.02,-0.76,-1.05,Fri Jul 28 2023 07:28:15 GMT+0100 (British Summer Time),72.46,-0.33,-0.45,false,No trade
+oPrice,run1,pNPrice,pChange,pChangePercentage,run2,aNPrice,aChange,aChangePercentage,makeTrade,tradetestResult
+72.46,Fri Jul 28 2023 08:28:15 GMT+0100 (British Summer Time),71.95,-0.51,-0.70,Fri Jul 28 2023 09:28:15 GMT+0100 (British Summer Time),72.99,0.53,0.74,false,No trade
+oPrice,run1,pNPrice,pChange,pChangePercentage,run2,aNPrice,aChange,aChangePercentage,makeTrade,tradetestResult
+72.79,Fri Jul 28 2023 10:28:15 GMT+0100 (British Summer Time),72.86,0.07,0.10,Fri Jul 28 2023 11:28:15 GMT+0100 (British Summer Time),72.99,0.21,0.28,false,No trade

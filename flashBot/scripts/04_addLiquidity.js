@@ -1,19 +1,32 @@
 // Uniswap contract addresses
+/*
 WETH_ADDRESS= '0x5FbDB2315678afecb367f032d93F642f64180aa3'
 FACTORY_ADDRESS= '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512'
 SWAP_ROUTER_ADDRESS= '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0'
 NFT_DESCRIPTOR_ADDRESS= '0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9'
 POSITION_DESCRIPTOR_ADDRESS= '0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9'
-POSITION_MANAGER_ADDRESS= '0x5FC8d32690cc91D4c39d9d3abcBD16989F875707'
+POSITION_MANAGER_ADDRESS= '0x5FC8d32690cc91D4c39d9d3abcBD16989F875707'*/
+WETH_ADDRESS= '0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9'
+FACTORY_ADDRESS= '0x5FC8d32690cc91D4c39d9d3abcBD16989F875707'
+SWAP_ROUTER_ADDRESS= '0x0165878A594ca255338adfa4d48449f69242Eb8F'
+NFT_DESCRIPTOR_ADDRESS= '0xa513E6E4b8f2a923D98304ec87F64353C4D5C853'
+POSITION_DESCRIPTOR_ADDRESS= '0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6'
+POSITION_MANAGER_ADDRESS= '0x8A791620dd6260079BF849Dc5567aDC3F2FdC318'
 
 // Pool addresses
+/*
 USDT_USDC_500= '0x1FA8DDa81477A5b6FA1b2e149e93ed9C7928992F'
 USDT_USDC_3000= '0x3B00F82071576B8489A6e3df223dcC0e937841d1'
-USDT_USDC_10000= '0xb09EB46A30889ae3cE4AFa5d8ebD136B4f389B85'
+USDT_USDC_10000= '0xb09EB46A30889ae3cE4AFa5d8ebD136B4f389B85'*/
+USDT_USDC_500= '0x90D2547AC8dad5Ec2EE312B5be6dbc91f0816657'
+USDT_USDC_3000= '0x72fB20A6a3525222e5CcEbc8D71cC259531C9310'
+USDT_USDC_10000= '0x714dFdC840cc90B2b05c2A468AAE9D0Fbf20a325'
 
 // Token addresses
-TETHER_ADDRESS= '0x0165878A594ca255338adfa4d48449f69242Eb8F'
-USDC_ADDRESS= '0xa513E6E4b8f2a923D98304ec87F64353C4D5C853'
+/*TETHER_ADDRESS= '0x0165878A594ca255338adfa4d48449f69242Eb8F'
+USDC_ADDRESS= '0xa513E6E4b8f2a923D98304ec87F64353C4D5C853'*/
+TETHER_ADDRESS= '0x610178dA211FEF7D417bC0e6FeD39F05609AD788'
+USDC_ADDRESS= '0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e'
 
 const artifacts = {
   NonfungiblePositionManager: require("@uniswap/v3-periphery/artifacts/contracts/NonfungiblePositionManager.sol/NonfungiblePositionManager.json"),
@@ -117,13 +130,13 @@ async function main() {
     mintParams[poolAddress] = params
   })
 
-  const tx1 = await nonfungiblePositionManager.connect(owner).mint(mintParams[USDT_USDC_500], { gasLimit: '1000000' })
+  const tx1 = await nonfungiblePositionManager.connect(owner).mint(mintParams[USDT_USDC_500], { gasLimit: '20000000' })
   await tx1.wait()
 
-  const tx2 = await nonfungiblePositionManager.connect(owner).mint(mintParams[USDT_USDC_3000], { gasLimit: '1000000' })
+  const tx2 = await nonfungiblePositionManager.connect(owner).mint(mintParams[USDT_USDC_3000], { gasLimit: '20000000' })
   await tx2.wait()
 
-  const tx3 = await nonfungiblePositionManager.connect(owner).mint(mintParams[USDT_USDC_10000], { gasLimit: '1000000' })
+  const tx3 = await nonfungiblePositionManager.connect(owner).mint(mintParams[USDT_USDC_10000], { gasLimit: '20000000' })
   await tx3.wait()
   console.log('done')
 }

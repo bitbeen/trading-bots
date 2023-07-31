@@ -3,7 +3,7 @@ const abiDecoder = require('abi-decoder')
 const { abi: IUniswapV3PoolABI } = require('@uniswap/v3-core/artifacts/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json')
 const { abi: SwapRouterABI} = require('@uniswap/v3-periphery/artifacts/contracts/interfaces/ISwapRouter.sol/ISwapRouter.json')
 const {Quoter} = require('@uniswap/v3-periphery/artifacts/contracts/lens/Quoter.sol/Quoter.json')
-const { getPoolImmutables, getPoolState, getAbi, handleProxyTokenContract } = require('./helpers')
+const { getPoolImmutables, getPoolState, getAbi, handleProxyTokenContract } = require('../uniswapBot/helpers')
 
 
 const {AlphaRouter,ChainId,SwapOptionsSwapRouter02,SwapRoute,SwapType} = require('@uniswap/smart-order-router')

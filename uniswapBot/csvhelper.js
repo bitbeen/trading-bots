@@ -1,92 +1,74 @@
 const fs = require("fs");
-
 var csvWriter = require('csv-write-stream');
-var writer = csvWriter({sendHeaders: false}); //Instantiate var
-var csvFilename = "./trades/july.csv";
 
 
-exports.csvOutPutArb = async (finalTradeData) => {
-    var csvFilename = "./trades/arbitrage.csv";
 
-    //Start Date,End Date,Amount In,Amount Out,Profit,Total Gas Cost,Profit After Gas
+
+
+
+exports.csvWriteFullTrade = async (file,tradeData) => {
+   
     writer = csvWriter({sendHeaders: false});
-    writer.pipe(fs.createWriteStream(csvFilename, {flags: 'a'}));
-    writer.write({
-        pair: finalTradeData.pair,
-        start: finalTradeData.start,
-        end: finalTradeData.end,
-        in: finalTradeData.in,
-        out:finalTradeData.out,
-        profit:finalTradeData.profit,
-        gasCost:finalTradeData.gasCost,
-        profitAfterGas: finalTradeData.profitAfterGas,
-        type: "arbitrage"
-
-    });
-writer.end();
-
+    writer.pipe(fs.createWriteStream(file, {flags: 'a'}));
+    writer.write(tradeData);
+    writer.end();
+    //append a new trade
 
 
 }
 
-
-exports.csvOutPutOpen= async (initTradeData) => {
-    var csvFilename = "./trades/open.csv";
-
-    //Start Date,End Date,Amount In,Amount Out,Profit,Total Gas Cost,Profit After Gas
-    writer = csvWriter({sendHeaders: false});
-    writer.pipe(fs.createWriteStream(csvFilename, {flags: 'a'}));
-    writer.write({
-        pair: initTradeData.pair,
-        start: initTradeData.start,
-        end: 0,
-        in: initTradeData.in,
-        out: 0,
-        profit:0,
-        gasCost:initTradeData.gasCost,
-        profitAfterGas: 0,
-        type: "simple open"
-    });
-writer.end();
-
+exports.jsonWriteInitTrade = async (file,tradeData) => {
+    fs.writeFileSync(file, JSON.stringify(tradeData));
+    console.log("initial trade written to JSON")
 
 
 }
 
-
-exports.csvOutPutClosed = async (finalTradeData) => {
-    var csvFilename = "./trades/closed.csv";
-
-    //Start Date,End Date,Amount In,Amount Out,Profit,Total Gas Cost,Profit After Gas
-    writer = csvWriter({sendHeaders: false});
-    writer.pipe(fs.createWriteStream(csvFilename, {flags: 'a'}));
-    writer.write({
-        pair: finalTradeData.pair,
-        start: finalTradeData.start,
-        end: finalTradeData.end,
-        in: finalTradeData.in,
-        out:finalTradeData.out,
-        profit:finalTradeData.profit,
-        gasCost:finalTradeData.gasCost,
-        profitAfterGas: finalTradeData.profitAfterGas,
-        type: "simple closed"
-
-    });
-writer.end();
-
-
+exports.jsonReadInitTrade = async (file) => {
+    let rawDataTrade = fs.readFileSync(file);
+    let jsonTrade = JSON.parse(rawDataTrade);
+    
+    
+    return(jsonTrade)
 
 }
 
-exports.geckoTestExport = async (filename,data) => {
+
+
+
+exports.jsonExists = async (file) => {
+   
+
+    if (fs.existsSync(file)) {
+        console.log("file exists")
+        //file exists
+    }else{
+        fs.writeFileSync(file, JSON.stringify([]));
+        console.log("file created")
+        return
+    }
+    
+    
     
 
-    //Start Date,End Date,Amount In,Amount Out,Profit,Total Gas Cost,Profit After Gas
-    writer = csvWriter({sendHeaders: Object.keys(data)});
-    writer.pipe(fs.createWriteStream(filename, {flags: 'a'}));
-    writer.write(data);
-writer.end();
 
+}
+
+exports.jsonReadTrades = async (file) => {
+   
+
+    let rawdataTrades = fs.readFileSync(file);
+    let jsonTrades = JSON.parse(rawdataTrades);
+    //console.log(jsonTrades);
+
+    return(jsonTrades)
 
 
 }
+
+
+
+
+
+
+

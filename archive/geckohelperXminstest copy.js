@@ -2,14 +2,14 @@ const { geckoTestExport } = require('./csvhelper')
 const axios = require('axios')
 const { makeTrade } = require('./tradehelpers')
 
-let pool = "0xa9077cdb3d13f45b8b9d87c43e11bce0e73d8631"
+let pool = "0x98b9162161164de1ed182a0dfa08f5fbf0f733ca"
 let _minutes = 60 //[10,30,60]
-let poolName ="AAVE"
+let poolName ="LINK"
 const smoothingFactor = 0.2;
 let filename = "gecko_test_" + poolName + "_" + _minutes + "mins_" + smoothingFactor + "smF.csv"
 
 
-const main = async() =>{
+exports.geckoPredict = async() =>{
     var result
     var historicalDatas = []
     var time
@@ -87,7 +87,7 @@ const main = async() =>{
 
         }else if(changeData.makeTrade==true && (changeData.aChangePercentage>=changeData.pChangePercentage) ){
             changeData.tradetestResult = "Loss"
-        }else if (changeData.makeTradee==false){
+        }else if (changeData.makeTrade==false){
             changeData.tradetestResult = "No trade"
         }else{
             changeData.tradetestResult = "Something wrong"

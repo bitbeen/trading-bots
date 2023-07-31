@@ -1,10 +1,10 @@
 
 
 const ethers = require('ethers'); // connect to blockchain 
-const { getAbi, getPoolData, getTokenData } = require('./helpers')
+const { getAbi, getPoolData, getTokenData } = require('../uniswapBot/helpers')
 
-const { initialTrade, pollingTrade, checkQuote, makeTrade } = require('./tradehelpers')
-const { csvOutPut, csvOutPutClosed, csvOutPutOpen } = require('./csvhelper');
+const { initialTrade, pollingTrade, checkQuote, makeTrade } = require('../uniswapBot/tradehelpers')
+const { csvOutPut, csvOutPutClosed, csvOutPutOpen } = require('../uniswapBot/csvhelper');
 
 
 

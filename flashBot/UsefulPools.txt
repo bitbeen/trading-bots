@@ -1,0 +1,46 @@
+{
+  liquidityPools(
+    where: {inputTokens_: {symbol: "AAVE"}}
+    orderBy: totalLiquidity
+    orderDirection: desc
+  ) {
+    fees {
+      feePercentage
+    }
+    name
+    liquidityToken {
+      name
+      symbol
+    }
+  }
+}
+
+{
+  liquidityPools(where: {name_contains: "Uniswap V3 Tether USD/Dai Token"}) { 
+    fees {
+      feePercentage
+    }
+    id
+    totalLiquidity
+  }
+}
+
+This is how you find the pools
+
+[USDT DAI]
+Uniswap V3 Tether USD/Dai Token
+Uniswap V3 DAI/USDC
+Uniswap V3 USD Coin (PoS)/(PoS) Dai Stablecoin
+
+[Matic/Aave, Matic/Link, Matic/]
+
+AAVE
+Uniswap V3 Wrapped Matic/Aave (PoS) 0.3%
+Uniswap V3 Wrapped Ether/Aave (PoS) 0.3%
+Uniswap V3 Uniswap (PoS)/Aave (PoS) 0.3%
+Uniswap V3 (PoS) Tether USD/Aave (PoS) 0.3%
+Uniswap V3 USD Coin (PoS)/Aave (PoS) 0.01%
+Uniswap V3 (PoS) Dai Stablecoin/Aave (PoS) 1%
+
+LINK - Uniswap V3 Wrapped Matic/Link
+
