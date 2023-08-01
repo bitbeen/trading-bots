@@ -11,9 +11,6 @@ const provider = new ethers.providers.JsonRpcProvider(MAINNET_URL);
 const UNIV3POOLCONTRACT='0x1F98431c8aD98523631AE4a59f267346ea31F984'
 
 
-USDT_USDC_500= '0x90D2547AC8dad5Ec2EE312B5be6dbc91f0816657'
-USDT_USDC_3000= '0x72fB20A6a3525222e5CcEbc8D71cC259531C9310'
-USDT_USDC_10000= '0x714dFdC840cc90B2b05c2A468AAE9D0Fbf20a325'
 
 const POOL1=""
 
@@ -46,8 +43,11 @@ async function getPoolData(poolContract) {
 
 
 async function main() {
+  //get the token adresses and ABIs before checking for opp then pass in together
   //poolName = "Uniswap V3 Wrapped Matic/Wrapped Ether"
   //poolName = "Uniswap V3 (PoS) Dai Stablecoin/(PoS) Tether USD"
+
+  //poolName ="Uniswap V3 USD Coin (PoS)/BOB"
   
   poolName ="Uniswap V3 USD Coin (PoS)/(PoS) Tether USD"
   const feePools = await getFeePools(poolName)
@@ -58,28 +58,42 @@ async function main() {
   console.log(liquidityPoolIDs)
  
   let UniswapV3PoolAbi = await getAbi(UNIV3POOLCONTRACT)
-  for (lpoolID in liquidityPoolIDs){
-    
-    let poolContract = new Contract(liquidityPoolIDs[lpoolID], UniswapV3Pool.abi, provider)
+  let poolDataResults = []
+  let highestPoolData = {priceRatio:0}
+  let lowestPoolData = {priceRatio:2}
+  let middlePoolData = {priceRatio:1000}
+  //for (lpoolID in liquidityPoolIDs){
+  
+  for (var i=liquidityPoolIDs.length; i--;) {
+
+    let poolContract = new Contract(liquidityPoolIDs[i], UniswapV3Pool.abi, provider)
     let poolData = await getPoolData(poolContract)
-    console.log(`poolData${lpoolID}`, poolData)
+    poolDataResults.push(poolData)
+
+    
+    if (poolData.priceRatio > highestPoolData.priceRatio) {
+      highestPoolData = poolData
+    }
+
+    if (poolData.priceRatio < lowestPoolData.priceRatio) {
+      lowestPoolData = poolData
+    }
+
+    if (Math.abs(poolData.priceRatio - 1) < Math.abs(middlePoolData.priceRatio - 1)) {
+      middlePoolData = poolData
+    }
+
+
+    console.log(`poolData${i}`, poolData)
 
   }
-   
+  console.log(highestPoolData)
+  console.log(lowestPoolData)
+  console.log(middlePoolData)
 
-  /*const poolContract500 = new Contract(USDT_USDC_500, UniswapV3PoolAbi, provider)
-  const poolData500 = await getPoolData(poolContract500)
-  console.log('poolData500', poolData500)
-
-  const poolContract3000 = new Contract(USDT_USDC_3000, UniswapV3Pool.abi, provider)
-  const poolData3000 = await getPoolData(poolContract3000)
-  console.log('poolData3000', poolData3000)
-
-  const poolContract10000 = new Contract(USDT_USDC_10000, UniswapV3Pool.abi, provider)
-  const poolData10000 = await getPoolData(poolContract10000)
-  console.log('poolData10000', poolData10000)*/
+  //calculate amount required for profit
+  
 }
-
 /*
 npx hardhat run --network mainnet scripts/checkLiquidity.js
 */

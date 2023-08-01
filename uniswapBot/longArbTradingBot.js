@@ -20,12 +20,12 @@ const main = async() =>{
    //pooladdress = "0xeb1c641d49da59b9a5c7c30c373b31fe6b0ed3a7" //USDT FRAX
    //pooladdress= "0x99799d0e96d4e436f4b8d2e125f0b1ce8e1770a7" //USDC MIM
    //pooladdress="0x2c9706d421ddd566fd487628592b2451898eb77f" //BUSD USDC
-   pooladdress = "0xddd919428330369186d27df0848b23908f1f4c24" //USDC FRAX
+   //pooladdress = "0xddd919428330369186d27df0848b23908f1f4c24" //USDC FRAX
    //pooladdress="0xd2d71d27923f07eab4dad6d1d21e3fcffa997562" //USDT USDT Wormhole
    //pooladdress="0xbfac5c438c9938ae3260c023bcc859aa4315f671"  //USDT USDT Outbridge
    //pooladdress="0x59ea21a628311dada9de0e20230602ab2567ee58" //BUSD USDC0.05%
    //pooladdress="0x59ea21a628311dada9de0e20230602ab2567ee58" //BUSD USDC1%
-   //pooladdress="0x3c5bb2a0041b8db9511f28152e30ab142b784e50" //BUSD DAI 
+   pooladdress="0x3c5bb2a0041b8db9511f28152e30ab142b784e50" //BUSD DAI 
    //pooladdress="0xa3aa659394974533f050910f2a27d6d685ca2a8c" //BitKong Dollar
    
 
@@ -273,12 +273,15 @@ const main = async() =>{
 
                 console.log(" \nWRITING RESULTS TO TRADE CSV\n-------------------")
                 
-                handleFinalTradeResults(initTradeState,finalTradeState)
+                handleFinalTradeResults(initTradeState,finalTradeState,completed_trade_file)
                 tradeState.message="finished process"
                 console.log(tradeState.message)
                
-
+                
                 console.log(" \nBOT CLOSING DOWN\n-------------------")
+
+                clearInterval(initPolling)
+                clearInterval(revertPolling)
 
 
 
@@ -305,13 +308,17 @@ const main = async() =>{
 const handleFinalTradeResults = (initTradeState,finalTradeState, completed_trade_file) =>{
     let totalGasCost = initTradeState.txCost + finalTradeState.txCost
     let profit = finalTradeState.amount1 - initTradeState.amount0
+   
+    let testTotalGas = 0.04*4
+    totalGasCost = testTotalGas
     let profitAfterGas = profit - totalGasCost
+
 
     let tradeResult = {
         input: initTradeState.amount0,
         output: finalTradeState.amount1,
         profit: profit,
-        totalGasCost: totalGasCost,
+        totalGasCost: testTotalGas,
         profitAfterGas: profitAfterGas
 
     }
@@ -319,6 +326,7 @@ const handleFinalTradeResults = (initTradeState,finalTradeState, completed_trade
     console.log(tradeResult)
     
     csvWriteFullTrade(completed_trade_file,tradeResult)
+    
 
     
 

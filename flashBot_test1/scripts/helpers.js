@@ -4,8 +4,8 @@ const ethers = require('ethers');
 //const {TickMath, FullMath} = require('@uniswap/v3-sdk')
 
 require('dotenv').config()
-const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY
-const INFURA_URL = process.env.INFURA_URL
+const ETHERSCAN_API_KEY = process.env.POLYGONSCAN_API_KEY
+const INFURA_URL = process.env.MAINNET_URL
 
 const provider = new ethers.providers.JsonRpcProvider(INFURA_URL);
 
@@ -103,11 +103,13 @@ exports.getPoolFromTokens = async (factoryAddress, factoryAbi, PATH,fee) =>{
 
 exports.handleProxyTokenContract = async (tokenAddress, tokenAbi) =>{
     //get implementation contract address
+    
     const tokenContract = new ethers.Contract(
       tokenAddress,
       tokenAbi,
       provider
     )
+    
   
     const implementationTokenAddress = await tokenContract.implementation()
   
@@ -115,6 +117,7 @@ exports.handleProxyTokenContract = async (tokenAddress, tokenAbi) =>{
     //get implementation contract abi
     const implementationTokenAbi = await getAbi(implementationTokenAddress)
     tokenAbi = implementationTokenAbi //ressaigned variable
+    
     let actualTokenData = {tokenAddress,tokenAbi}
     return actualTokenData
   

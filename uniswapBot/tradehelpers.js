@@ -29,6 +29,7 @@ const QUOTER_ADDRESS = '0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6'
 
 
 
+
 exports.makeTrade =  async (pair, route, amountIn, amountOut) =>{
   let symbol0 = pair.symbol[0]
   let decimals0 = pair.decimals[0] //https://ethereum.stackexchange.com/questions/133589/uniswap-v2-getamountsout-and-towei-fromwei

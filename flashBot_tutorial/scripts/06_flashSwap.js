@@ -42,7 +42,8 @@ async function main() {
   const [owner, signer2] = await ethers.getSigners(); //connect to provider
 
   Flash = await ethers.getContractFactory('PairFlash', signer2);
-  flash = await Flash.deploy(SWAP_ROUTER_ADDRESS, FACTORY_ADDRESS, WETH_ADDRESS);
+  //!!!!!!!!
+  flash = await Flash.deploy(SWAP_ROUTER_ADDRESS, FACTORY_ADDRESS, WETH_ADDRESS); //this delpoys a new contract everytime you flashswap bad idea!
   console.log('flash', flash.address)
 
   const usdtContract = new Contract(TETHER_ADDRESS,artifacts.Usdt.abi,provider)
