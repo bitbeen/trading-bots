@@ -152,3 +152,85 @@ exports.handleProxyTokenContract = async (tokenAddress, tokenAbi) =>{
         
     
   }
+
+  exports.getTokenData = async (token) => {
+    console.log(token)
+    
+    const URL = 'https://api.thegraph.com/subgraphs/name/messari/uniswap-v3-polygon'
+    
+    query = `
+    {
+      token(id: "${token}") {
+        decimals
+        symbol
+        id
+      }
+    }`
+
+    await axios.post(URL, {query: query})
+    .then((result) =>{
+      token = result.data.data.token
+      //console.log(result.data)
+      
+    })
+
+    return token
+
+  }
+
+  exports.getPoolName = async (id) => {
+
+    //better option would be get token Pools from TOken ID 1 and Token ID 2 but this works too. 
+   
+    
+    const URL = 'https://api.thegraph.com/subgraphs/name/messari/uniswap-v3-polygon'
+    
+    query = `
+    
+
+    {
+      liquidityPool(id: "${id}") {
+        name
+      }
+    }
+    
+    `
+
+    await axios.post(URL, {query: query})
+    .then((result) =>{
+      _poolName = result.data.data.liquidityPool.name
+      poolName = _poolName.slice(0, -5);
+      //console.log(result.data)
+      
+    })
+
+    return poolName
+
+  }
+
+  exports.getPoolData= async (poolAddress,poolAbi) => {
+    //get pool immutables just reads data from the pool contract
+    //get more immutables instead of duplicating then pass immutables in for basetoken
+
+    const poolContract = new ethers.Contract(
+    poolAddress,
+    poolAbi,
+    provider
+  )
+    
+    const [token0, token1, fee, slot0] = await Promise.all([
+      poolContract.token0(),
+      poolContract.token1(),
+      poolContract.fee(),
+      poolContract.slot0(),
+    ])
+  
+    const immutables = {
+      token0: token0,
+      token1: token1,
+      fee: fee,
+      slot0: slot0
+    }
+  
+    return immutables
+  }
